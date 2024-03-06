@@ -13,34 +13,25 @@
 #include "wawa.h"
 #include <stdio.h>
 
-int	ft_wawa(int ac, char *av[], char *ev[])
+int	reverse_bool(int bool)
 {
-  char *text = "echo '\"Salut les mecs\"'";
-  
-	int i = 0;
-	int in_dquotes = 0;
-  int in_squotes = 0;
-  while (text[i] != '\0')
-  {
-    if (text[i] == '\'')
-    {
-      if (!in_dquotes)
-      {
-        in_squotes = in_squotes == 1 ? 0 : 1;
-      }
-    }
-    if (text[i] == '"')
-    {
-      if (!in_squotes)
-      {
-        in_dquotes = in_dquotes == 1 ? 0 : 1;
-      }
-    }
-    if ((in_dquotes && text[i] != '"') || (in_squotes && text[i] != '\''))
-    {
-      printf("%c", text[i]);
-    }
-    i++;
-  }
+	if (bool == 0)
+		return (1);
+	return (0);
+}
+
+void	update_quote_status(char c, t_quote_status *quote_status)
+{
+	if (c == '\'' && !quote_status->in_dquotes)
+		quote_status->in_squotes = reverse_bool(quote_status->in_squotes);
+	if (c == '"' && !quote_status->in_squotes)
+		quote_status->in_dquotes = reverse_bool(quote_status->in_dquotes);
+}
+
+void ft_init_quote_status(t_quote_status	*quote_status)
+{
+	quote_status->in_dquotes = 0;
+	quote_status->in_squotes = 0;
+}
 	return (0);
 }

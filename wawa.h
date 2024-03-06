@@ -12,5 +12,10 @@
 
 #ifndef WAWA_H
 #define WAWA_H
-int	ft_wawa(int ac, char *av[], char *ev[]);
+typedef struct	s_quote_status
+{
+	int in_squotes;
+	int in_dquotes;
+}				t_quote_status;
+
 #endif
