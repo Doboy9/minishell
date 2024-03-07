@@ -46,20 +46,19 @@ int	ft_is_word_cutter(const char *str, int index)
 	j = 0;
 	is_word_cutter = 0;
 	ft_init_quote_status(&quote_status);
-	while (i <= index)
+	while (i < index)
 	{
 		update_quote_status(str[i], &quote_status);
-		j = 0;
-		while (word_cutters[j] != '\0')
-		{
-			if (word_cutters[j] == str[i])
-				is_word_cutter = 1;
-			j++;
-		}
-		if (quote_status.in_dquotes || quote_status.in_squotes)
-			is_word_cutter = 0;
 		i++;
 	}
+	while (word_cutters[j] != '\0')
+	{
+		if (word_cutters[j] == str[i])
+			is_word_cutter = 1;
+		j++;
+	}
+	if (quote_status.in_dquotes || quote_status.in_squotes)
+		is_word_cutter = 0;
 	return (is_word_cutter);
 }
 
@@ -126,6 +125,8 @@ int	ft_wawa(int ac, char *av[], char *ev[])
 		ft_main(ac, av, ev, lineread);
 		printf("\n");
 		//rl_on_new_line();
+		add_history(lineread);
+		free(lineread);
 		lineread = readline(prompt);
 	}
 

@@ -24,7 +24,6 @@ static char	*ft_static_get_part(const char *str, int i)
 		part_len++;
 		i++;
 	}
-	printf("\n");
 	j = 0;
 	part = ft_calloc((part_len + 1), sizeof(char));
 	if (!part)
