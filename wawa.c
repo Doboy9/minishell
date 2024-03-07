@@ -6,7 +6,7 @@
 /*   By: wneel <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/05 15:50:27 by wneel             #+#    #+#             */
-/*   Updated: 2024/03/07 09:22:03 by wneel            ###   ########.fr       */
+/*   Updated: 2024/03/07 15:52:29 by wneel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,7 +104,7 @@ int	ft_main(int ac, char *av[], char *ev[], char *lineread)
 	// 		is_word_cutter = 0;
 	// 	i++;
 	// }
-	// ft_print_split(ft_split_bash_words(cmd));
+	ft_print_split(ft_split_bash_words(lineread));
 	return (0);
 }
 

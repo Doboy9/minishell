@@ -6,11 +6,16 @@
 /*   By: wneel <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/05 15:50:27 by wneel             #+#    #+#             */
-/*   Updated: 2024/03/06 12:29:00 by wneel            ###   ########.fr       */
+/*   Updated: 2024/03/07 16:49:39 by wneel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "wawa.h"
+
+static int	ft_static_is_char_whitespace(char c)
+{
+	return ((c > 7 && c < 14) || (c == 32));
+}
 
 static char	*ft_static_get_part(const char *str, int i)
 {
@@ -19,7 +24,8 @@ static char	*ft_static_get_part(const char *str, int i)
 	int		j;
 
 	part_len = 0;
-	while (str[i] != '\0' && !ft_is_word_cutter(str, i))
+	j = i;
+	while ((str[i] != '\0' && !ft_is_word_cutter(str, i) && !ft_is_word_cutter(str, j)) || (str[i] != '\0' && ft_is_word_cutter(str, i) && str[i] == str[j]))
 	{
 		part_len++;
 		i++;
@@ -49,7 +55,7 @@ static void	ft_static_count_alloc_space(
 	*total_space = 0;
 	while (str[i] != '\0')
 	{
-		if (ft_is_word_cutter(str, i))
+		if (ft_static_is_char_whitespace(str[i]))
 			i++;
 		else
 		{
@@ -77,7 +83,7 @@ static char	**ft_split_loop(
 	split_count = 0;
 	while (s[i] != '\0')
 	{
-		if (ft_is_word_cutter(s, i))
+		if (ft_static_is_char_whitespace(s[i]))
 			i++;
 		else
 		{
