@@ -6,7 +6,7 @@
 /*   By: wneel <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/05 15:50:27 by wneel             #+#    #+#             */
-/*   Updated: 2024/03/07 15:52:29 by wneel            ###   ########.fr       */
+/*   Updated: 2024/03/09 17:46:05 by wneel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,6 +108,9 @@ int	ft_main(int ac, char *av[], char *ev[], char *lineread)
 	return (0);
 }
 
+int parse_flags(char **flags);
+char	**make_chartab(int n, ...);
+
 int	ft_wawa(int ac, char *av[], char *ev[])
 {
 	(void)ac;
@@ -117,21 +120,93 @@ int	ft_wawa(int ac, char *av[], char *ev[])
 	// t_quote_status	quote_status;
 	// ft_init_quote_status(&quote_status);
 	// printf("%s", cmd);
-	const char *prompt = "easyshell XD >";
-	char *lineread = readline(prompt);
-	while (lineread)
-	{
-		//printf("%s", lineread);
-		ft_main(ac, av, ev, lineread);
-		printf("\n");
-		//rl_on_new_line();
-		add_history(lineread);
-		free(lineread);
-		lineread = readline(prompt);
-	}
+	// const char *prompt = "easyshell XD >";
+	// char *lineread = readline(prompt);
+	// while (lineread)
+	// {
+	// 	//printf("%s", lineread);
+	// 	if (lineread[0] == 49)
+	// 		lineread = "(echo a                                                      &&echo 'lala')";
+	// 	ft_main(ac, av, ev, lineread);
+	// 	printf("\n");
+	// 	//rl_on_new_line();
+	// 	add_history(lineread);
+	// 	free(lineread);
+	// 	lineread = readline(prompt);
+	// }
+
+		char **test1 = make_chartab(2, "-n", "hello");
+
+		char **test2 = make_chartab(5, "-n",
+		"-n",
+		"-n",
+		"statat",
+		"-haha", "jjj-h");
+
+		char **test3 = make_chartab(1, "-nnnnnn");
+
+		char **test4 = make_chartab(4, "-nnnnnnnnnn",
+		"-n",
+		"-n",
+		"-x");
+
+		char **test5 = make_chartab(3, "-nXD",
+		"-n",
+		"-n");
+
+		char **test6 = make_chartab(3, "-n",
+		"-n",
+		"n");
+
+		char **test7 = make_chartab(4, "-n",
+		"-n",
+		"--n", "-n");
+
+
+	ft_print_split(test1);
+	parse_flags(test1);
+
+	ft_print_split(test2);
+	parse_flags(test2);
+
+	ft_print_split(test3);
+	parse_flags(test3);
+
+	ft_print_split(test4);
+	parse_flags(test4);
+
+	ft_print_split(test5);
+	parse_flags(test5);
+
+	ft_print_split(test6);
+	parse_flags(test6);
+
+	ft_print_split(test7);
+	parse_flags(test7);
+
 
 	return (0);
 }
+char	**make_chartab(int n, ...)
+{
+	int		i;
+	char	**output;
+	va_list	params;
+
+	i = 0;
+	output = ft_calloc(n + 1, sizeof(char *));
+	va_start(params, n);
+	while (i < n)
+	{
+		char *arg = va_arg(params, char *);
+		output[i] = ft_calloc(ft_strlen(arg) + 1, sizeof(char));
+		ft_memcpy(output[i], arg, ft_strlen(arg));
+		i++;
+	}
+	va_end(params);
+	return (output);
+}
+
 int	only_n(char *str)
 {
 	int	i;
