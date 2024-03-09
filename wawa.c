@@ -132,3 +132,38 @@ int	ft_wawa(int ac, char *av[], char *ev[])
 
 	return (0);
 }
+int	only_n(char *str)
+{
+	int	i;
+
+	i = 0;
+	while (str[i])
+	{
+		if (str[i] != 'n')
+			return (0);
+		i++;
+	}
+	return (1);
+}
+
+int parse_flags(char **flags)
+{
+	static int xd = 0;
+	int	i;
+	int	j;
+
+	i = 0;
+	while (flags[i])
+	{
+		if (flags[i][0] != '-')
+			break ;
+		j = 1;
+		if (!only_n(&flags[i][1]))
+			break ;
+		printf("xd: %d _%s_\n", xd, flags[i]);
+		i++;
+	}
+	printf("\n");
+	xd++;
+	return 0;
+}
