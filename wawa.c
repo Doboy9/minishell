@@ -6,7 +6,7 @@
 /*   By: wneel <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/05 15:50:27 by wneel             #+#    #+#             */
-/*   Updated: 2024/03/09 17:46:05 by wneel            ###   ########.fr       */
+/*   Updated: 2024/03/11 17:51:02 by wneel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,6 +111,43 @@ int	ft_main(int ac, char *av[], char *ev[], char *lineread)
 int parse_flags(char **flags);
 char	**make_chartab(int n, ...);
 
+int	is_well_quoted(char *str)
+{
+	int	strlen;
+
+	strlen = ft_strlen(str);
+	if (str[0] == '\"' && str[strlen - 1] != '\"')
+		return (0);
+	if (str[0] == '\'' && str[strlen - 1] != '\'')
+		return (0);
+	return (1);
+}
+
+int	is_d_quoted(char *str)
+{
+	int	strlen;
+
+	strlen = ft_strlen(str);
+	if (str[0] == '\"' && str[strlen - 1] == '\"')
+		return (1);
+	return (0);
+}
+
+int	ft_char_next_index(char *str, char to_find)
+{
+	unsigned int	i;
+
+	i = 0;
+	while (str[i] != '\0')
+	{
+		if (str[i] == to_find)
+			return (i);
+		if (str[i] != to_find)
+			i++;
+	}
+	return (-1);
+}
+
 int	ft_wawa(int ac, char *av[], char *ev[])
 {
 	(void)ac;
@@ -135,54 +172,43 @@ int	ft_wawa(int ac, char *av[], char *ev[])
 	// 	lineread = readline(prompt);
 	// }
 
-		char **test1 = make_chartab(2, "-n", "hello");
+	char **testargs = make_chartab(5, "echo", "-n", "'salut'", "\"les $NOOB XD", "\"XPTDRRRRRRRRRRRRRRRRRRRRRRRRR haha jss plie de rire XD $NOOB is nnob\"");
 
-		char **test2 = make_chartab(5, "-n",
-		"-n",
-		"-n",
-		"statat",
-		"-haha", "jjj-h");
+	int	i;
+	i = 0;
+	while (testargs[i])
+	{
+		if (!is_d_quoted(testargs[i]))
+		{
+			i++;
+			continue ;
+		}
+		int	j;
 
-		char **test3 = make_chartab(1, "-nnnnnn");
-
-		char **test4 = make_chartab(4, "-nnnnnnnnnn",
-		"-n",
-		"-n",
-		"-x");
-
-		char **test5 = make_chartab(3, "-nXD",
-		"-n",
-		"-n");
-
-		char **test6 = make_chartab(3, "-n",
-		"-n",
-		"n");
-
-		char **test7 = make_chartab(4, "-n",
-		"-n",
-		"--n", "-n");
+		j = 0;
+		while (testargs[i][j])
+		{
+			if (testargs[i][j] == '$')
+			{
+				int chr = ft_char_next_index(&testargs[i][j], ' ');
+				//int	k = 0;
 
 
-	ft_print_split(test1);
-	parse_flags(test1);
+				// printf("\n_%s_\n", ft_substr(testargs[i], j + 1, chr - 1));
+				ft_putstr_fd(getenv(ft_substr(testargs[i], j + 1, chr - 1)), 1);
 
-	ft_print_split(test2);
-	parse_flags(test2);
 
-	ft_print_split(test3);
-	parse_flags(test3);
+				// printf("\nj: %d chr: %d\n", j, chr);
+			}
+			else
+				ft_putchar_fd(testargs[i][j], 1);
+			j++;
+		}
 
-	ft_print_split(test4);
-	parse_flags(test4);
+		i++;
+	}
 
-	ft_print_split(test5);
-	parse_flags(test5);
-
-	ft_print_split(test6);
-	parse_flags(test6);
-
-	ft_print_split(test7);
-	parse_flags(test7);
+	// printf("\n%s\n", getenv("NOOB"));
 
 
 	return (0);
