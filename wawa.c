@@ -6,7 +6,7 @@
 /*   By: wneel <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/05 15:50:27 by wneel             #+#    #+#             */
-/*   Updated: 2024/03/11 17:51:02 by wneel            ###   ########.fr       */
+/*   Updated: 2024/03/12 19:50:27 by wneel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,12 +74,66 @@ void	ft_print_split(char **splitted)
 	}
 }
 
+enum SPECIAL_CHARACTERS {
+	TEXT = 0,
+	PIPE = 1,
+	ANGLE_BRACE_LEFT = 2,
+	ANGLE_BRACE_RIGHT = 3,
+	DOUBLE_ANGLE_BRACE_LEFT = 4,
+	DOUBLE_ANGLE_BRACE_RIGHT = 5
+};
+
+int	parse_word(char *bash_word)
+{
+	int	word_len;
+
+	word_len = ft_strlen(bash_word);
+	if (word_len == 1)
+	{
+		if (bash_word[0] == '|')
+			return (PIPE);
+		if (bash_word[0] == '<')
+			return (ANGLE_BRACE_LEFT);
+		if (bash_word[0] == '>')
+			return (ANGLE_BRACE_RIGHT);
+	}
+	if (word_len == 2)
+	{
+		if (bash_word[0] == '<' && bash_word[1] == '<')
+			return (DOUBLE_ANGLE_BRACE_LEFT);
+		if (bash_word[0] == '>' && bash_word[1] == '>')
+			return (DOUBLE_ANGLE_BRACE_RIGHT);
+	}
+	return (TEXT);
+}
+
+int	char_tab_len(char **tab)
+{
+	int	i;
+
+	i = 0;
+	while (tab[i])
+		i++;
+	return (i);
+}
+
+void	ft_print_text_read(t_text_read **text_read)
+{
+	int	i;
+
+	i = 0;
+	while (text_read[i])
+	{
+		printf("\n{\n	text : %s;\n	mchar: %d;\n	attr : %d;\n}\n", text_read[i]->raw_text, text_read[i]->is_metachar, text_read[i]->is_attribution);
+		i++;
+	}
+}
+
 int	ft_main(int ac, char *av[], char *ev[], char *lineread)
 {
 	(void)ac;
 	(void)av;
 	(void)ev;
-	//char *cmd = "echo '\"Salut les me&cs\"'\n";
 	t_quote_status	quote_status;
 	ft_init_quote_status(&quote_status);
 
@@ -104,7 +158,23 @@ int	ft_main(int ac, char *av[], char *ev[], char *lineread)
 	// 		is_word_cutter = 0;
 	// 	i++;
 	// }
-	ft_print_split(ft_split_bash_words(lineread));
+	char **bash_splitted = ft_split_bash_words(lineread);
+	ft_print_split(bash_splitted);
+	i = 0;
+	t_text_read		**text_read = NULL;
+	text_read = ft_calloc(char_tab_len(bash_splitted) + 1, sizeof(t_text_read *));
+	while (bash_splitted[i])
+	{
+		t_text_read *splitted = malloc(sizeof(t_text_read));
+		splitted->raw_text = bash_splitted[i];
+		splitted->is_metachar = parse_word(bash_splitted[i]);
+		splitted->is_attribution = 0x667;
+		text_read[i] = splitted;
+		i++;
+	}
+
+	ft_print_text_read(text_read);
+
 	return (0);
 }
 
@@ -148,30 +218,8 @@ int	ft_char_next_index(char *str, char to_find)
 	return (-1);
 }
 
-int	ft_wawa(int ac, char *av[], char *ev[])
+void expand_vars()
 {
-	(void)ac;
-	(void)av;
-	(void)ev;
-	// char *cmd = "echo ()('\"Salut les me&cs\"')\n";
-	// t_quote_status	quote_status;
-	// ft_init_quote_status(&quote_status);
-	// printf("%s", cmd);
-	// const char *prompt = "easyshell XD >";
-	// char *lineread = readline(prompt);
-	// while (lineread)
-	// {
-	// 	//printf("%s", lineread);
-	// 	if (lineread[0] == 49)
-	// 		lineread = "(echo a                                                      &&echo 'lala')";
-	// 	ft_main(ac, av, ev, lineread);
-	// 	printf("\n");
-	// 	//rl_on_new_line();
-	// 	add_history(lineread);
-	// 	free(lineread);
-	// 	lineread = readline(prompt);
-	// }
-
 	char **testargs = make_chartab(5, "echo", "-n", "'salut'", "\"les $NOOB XD", "\"XPTDRRRRRRRRRRRRRRRRRRRRRRRRR haha jss plie de rire XD $NOOB is nnob\"");
 
 	int	i;
@@ -209,6 +257,31 @@ int	ft_wawa(int ac, char *av[], char *ev[])
 	}
 
 	// printf("\n%s\n", getenv("NOOB"));
+}
+
+int	ft_wawa(int ac, char *av[], char *ev[])
+{
+	(void)ac;
+	(void)av;
+	(void)ev;
+	t_quote_status	quote_status;
+	ft_init_quote_status(&quote_status);
+	const char *prompt = "easyshell XD >";
+	char *lineread = readline(prompt);
+	while (lineread)
+	{
+		//printf("%s", lineread);
+		if (lineread[0] == 49)
+			ft_main(ac, av, ev, "< test | $echo xd | cat");
+		else
+			ft_main(ac, av, ev, lineread);
+		printf("\n");
+		//rl_on_new_line();
+		add_history(lineread);
+		if (lineread[0] != 49)
+			free(lineread);
+		lineread = readline(prompt);
+	}
 
 
 	return (0);
