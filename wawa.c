@@ -6,7 +6,7 @@
 /*   By: wneel <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/05 15:50:27 by wneel             #+#    #+#             */
-/*   Updated: 2024/03/13 15:52:59 by wneel            ###   ########.fr       */
+/*   Updated: 2024/03/13 16:15:55 by wneel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,6 +99,27 @@ int	char_tab_len(char **tab)
 	return (i);
 }
 
+int	is_well_quoted(char *str)
+{
+	int	i;
+	t_quote_status	quote_status;
+
+	ft_init_quote_status(&quote_status);
+	i = 0;
+	while (str[i] != '\0')
+	{
+		update_quote_status(str[i], &quote_status);
+		i++;
+	}
+	if (quote_status.in_dquotes)
+		printf("dquote issue here => %s", str);
+	if (quote_status.in_squotes)
+		printf("squote issue here =>  %s", str);
+	if (quote_status.in_dquotes || quote_status.in_squotes)
+		return (0);
+	return (1);
+}
+
 int	exec_line(int ac, char *av[], char *ev[], char *lineread)
 {
 	(void)ac;
@@ -125,6 +146,8 @@ int	exec_line(int ac, char *av[], char *ev[], char *lineread)
 	i = 0;
 	while (text_read[i])
 	{
+		if (!is_well_quoted(text_read[i]->raw_text))
+			return (0);
 		text_read[i]->raw_text = expand_vars(text_read[i]->raw_text);
 		i++;
 	}
@@ -246,6 +269,8 @@ int	ft_wawa(int ac, char *av[], char *ev[])
 		//printf("%s", lineread);
 		if (lineread[0] == 49)
 			exec_line(ac, av, ev, "< $XDD | $echo xd | cat");
+		else if (lineread[0] == 50)
+			exec_line(ac, av, ev, "< xdfile | echo sltcv2 > mdrfile | echo \"fail2 > failfile | echo ouicv2 > mdrfile2 | cat");
 		else
 			exec_line(ac, av, ev, lineread);
 		printf("\n");
