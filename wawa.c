@@ -6,11 +6,14 @@
 /*   By: wneel <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/05 15:50:27 by wneel             #+#    #+#             */
-/*   Updated: 2024/03/13 14:52:28 by wneel            ###   ########.fr       */
+/*   Updated: 2024/03/13 15:52:59 by wneel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "wawa.h"
+
+int parse_flags(char **flags);
+char	**make_chartab(int n, ...);
 
 const	char *word_cutters = " \t\n|&()<>"; // blank => https://www.gnu.org/software/bash/manual/bash.html#Definitions
 
@@ -62,15 +65,6 @@ int	ft_is_word_cutter(const char *str, int index)
 	return (is_word_cutter);
 }
 
-enum SPECIAL_CHARACTERS {
-	TEXT = 0,
-	PIPE = 1,
-	ANGLE_BRACE_LEFT = 2,
-	ANGLE_BRACE_RIGHT = 3,
-	DOUBLE_ANGLE_BRACE_LEFT = 4,
-	DOUBLE_ANGLE_BRACE_RIGHT = 5
-};
-
 int	parse_word(char *bash_word)
 {
 	int	word_len;
@@ -105,85 +99,41 @@ int	char_tab_len(char **tab)
 	return (i);
 }
 
-int	ft_main(int ac, char *av[], char *ev[], char *lineread)
+int	exec_line(int ac, char *av[], char *ev[], char *lineread)
 {
 	(void)ac;
 	(void)av;
 	(void)ev;
+	int		i;
 	t_quote_status	quote_status;
 	ft_init_quote_status(&quote_status);
-
-	int i = 0;
-	while (lineread[i] != '\0')
+	char **bash_splitted = ft_split_bash_words(lineread);
+	ft_print_split(bash_splitted);
+	i = 0;
+	t_text_read		**text_read = NULL;
+	text_read = ft_calloc(char_tab_len(bash_splitted) + 1, sizeof(t_text_read *));
+	while (bash_splitted[i])
 	{
-		update_quote_status(lineread[i], &quote_status);
-		if ((quote_status.in_dquotes && lineread[i] != '"') || (quote_status.in_squotes && lineread[i] != '\''))
-		{
-			printf("%c", lineread[i]);
-		}
+		t_text_read *splitted = malloc(sizeof(t_text_read));
+		splitted->raw_text = bash_splitted[i];
+		splitted->is_metachar = parse_word(bash_splitted[i]);
+		splitted->is_attribution = 0x667;
+		text_read[i] = splitted;
+		i++;
+	}
+	ft_print_text_read(text_read);
+	i = 0;
+	while (text_read[i])
+	{
+		text_read[i]->raw_text = expand_vars(text_read[i]->raw_text);
 		i++;
 	}
 
-	// i = 0;
-	// ft_init_quote_status(&quote_status);
-	// while (cmd[i] != '\0')
-	// {
-	// 	update_quote_status(cmd[i], &quote_status);
-	// 	int is_word_cutter = ft_is_word_cutter(cmd, i);
-	// 	if (quote_status.in_dquotes || quote_status.in_squotes)
-	// 		is_word_cutter = 0;
-	// 	i++;
-	// }
-	// char **bash_splitted = ft_split_bash_words(lineread);
-	// ft_print_split(bash_splitted);
-	// i = 0;
-	// t_text_read		**text_read = NULL;
-	// text_read = ft_calloc(char_tab_len(bash_splitted) + 1, sizeof(t_text_read *));
-	// while (bash_splitted[i])
-	// {
-	// 	t_text_read *splitted = malloc(sizeof(t_text_read));
-	// 	splitted->raw_text = bash_splitted[i];
-	// 	splitted->is_metachar = parse_word(bash_splitted[i]);
-	// 	splitted->is_attribution = 0x667;
-	// 	text_read[i] = splitted;
-	// 	i++;
-	// }
-
-	// ft_print_text_read(text_read);
-
-	// i = 0;
-	// while (text_read)
-	// {
-
-	// }
+	ft_print_text_read(text_read);
 
 	return (0);
 }
 
-int parse_flags(char **flags);
-char	**make_chartab(int n, ...);
-
-int	is_well_quoted(char *str)
-{
-	int	strlen;
-
-	strlen = ft_strlen(str);
-	if (str[0] == '\"' && str[strlen - 1] != '\"')
-		return (0);
-	if (str[0] == '\'' && str[strlen - 1] != '\'')
-		return (0);
-	return (1);
-}
-
-int	is_d_quoted(char *str)
-{
-	int	strlen;
-
-	strlen = ft_strlen(str);
-	if (str[0] == '\"' && str[strlen - 1] == '\"')
-		return (1);
-	return (0);
-}
 
 int	ft_char_next_index(char *str, char to_find)
 {
@@ -267,7 +217,6 @@ char	*expand_vars(char *str)
 	free(str);
 
 	printf("\n");
-	printf("after: \n_%s_", expanded_char);
 	return (expanded_char);
 }
 
@@ -296,9 +245,9 @@ int	ft_wawa(int ac, char *av[], char *ev[])
 
 		//printf("%s", lineread);
 		if (lineread[0] == 49)
-			ft_main(ac, av, ev, "< $XDD | $echo xd | cat");
+			exec_line(ac, av, ev, "< $XDD | $echo xd | cat");
 		else
-			ft_main(ac, av, ev, lineread);
+			exec_line(ac, av, ev, lineread);
 		printf("\n");
 		//rl_on_new_line();
 		add_history(lineread);

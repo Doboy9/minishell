@@ -6,7 +6,7 @@
 /*   By: wneel <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/05 15:50:31 by wneel             #+#    #+#             */
-/*   Updated: 2024/03/13 14:54:19 by wneel            ###   ########.fr       */
+/*   Updated: 2024/03/13 15:53:35 by wneel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,15 @@
 # include <stdio.h>
 # include <readline/readline.h>
 # include <readline/history.h>
+
+enum SPECIAL_CHARACTERS {
+	TEXT = 0,
+	PIPE = 1,
+	ANGLE_BRACE_LEFT = 2,
+	ANGLE_BRACE_RIGHT = 3,
+	DOUBLE_ANGLE_BRACE_LEFT = 4,
+	DOUBLE_ANGLE_BRACE_RIGHT = 5
+};
 
 typedef struct	s_quote_status
 {
@@ -35,4 +44,5 @@ char	**ft_split_bash_words(char const *s);
 int		ft_wawa(int ac, char *av[], char *ev[]);
 void	ft_print_text_read(t_text_read **text_read);
 void	ft_print_split(char **splitted);
+char	*expand_vars(char *str);
 #endif
