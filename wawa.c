@@ -6,7 +6,7 @@
 /*   By: wneel <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/05 15:50:27 by wneel             #+#    #+#             */
-/*   Updated: 2024/03/13 14:50:09 by wneel            ###   ########.fr       */
+/*   Updated: 2024/03/13 14:52:28 by wneel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,18 +62,6 @@ int	ft_is_word_cutter(const char *str, int index)
 	return (is_word_cutter);
 }
 
-void	ft_print_split(char **splitted)
-{
-	int	i;
-
-	i = 0;
-	while (splitted[i])
-	{
-		printf("_%s_\n", splitted[i]);
-		i++;
-	}
-}
-
 enum SPECIAL_CHARACTERS {
 	TEXT = 0,
 	PIPE = 1,
@@ -115,18 +103,6 @@ int	char_tab_len(char **tab)
 	while (tab[i])
 		i++;
 	return (i);
-}
-
-void	ft_print_text_read(t_text_read **text_read)
-{
-	int	i;
-
-	i = 0;
-	while (text_read[i])
-	{
-		printf("\n{\n	text : %s;\n	mchar: %d;\n	attr : %d;\n}\n", text_read[i]->raw_text, text_read[i]->is_metachar, text_read[i]->is_attribution);
-		i++;
-	}
 }
 
 int	ft_main(int ac, char *av[], char *ev[], char *lineread)
