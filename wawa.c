@@ -6,7 +6,7 @@
 /*   By: wneel <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/05 15:50:27 by wneel             #+#    #+#             */
-/*   Updated: 2024/03/12 19:50:27 by wneel            ###   ########.fr       */
+/*   Updated: 2024/03/13 14:50:09 by wneel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -158,22 +158,28 @@ int	ft_main(int ac, char *av[], char *ev[], char *lineread)
 	// 		is_word_cutter = 0;
 	// 	i++;
 	// }
-	char **bash_splitted = ft_split_bash_words(lineread);
-	ft_print_split(bash_splitted);
-	i = 0;
-	t_text_read		**text_read = NULL;
-	text_read = ft_calloc(char_tab_len(bash_splitted) + 1, sizeof(t_text_read *));
-	while (bash_splitted[i])
-	{
-		t_text_read *splitted = malloc(sizeof(t_text_read));
-		splitted->raw_text = bash_splitted[i];
-		splitted->is_metachar = parse_word(bash_splitted[i]);
-		splitted->is_attribution = 0x667;
-		text_read[i] = splitted;
-		i++;
-	}
+	// char **bash_splitted = ft_split_bash_words(lineread);
+	// ft_print_split(bash_splitted);
+	// i = 0;
+	// t_text_read		**text_read = NULL;
+	// text_read = ft_calloc(char_tab_len(bash_splitted) + 1, sizeof(t_text_read *));
+	// while (bash_splitted[i])
+	// {
+	// 	t_text_read *splitted = malloc(sizeof(t_text_read));
+	// 	splitted->raw_text = bash_splitted[i];
+	// 	splitted->is_metachar = parse_word(bash_splitted[i]);
+	// 	splitted->is_attribution = 0x667;
+	// 	text_read[i] = splitted;
+	// 	i++;
+	// }
 
-	ft_print_text_read(text_read);
+	// ft_print_text_read(text_read);
+
+	// i = 0;
+	// while (text_read)
+	// {
+
+	// }
 
 	return (0);
 }
@@ -218,45 +224,75 @@ int	ft_char_next_index(char *str, char to_find)
 	return (-1);
 }
 
-void expand_vars()
+int	calc_expanded_size(char *str)
 {
-	char **testargs = make_chartab(5, "echo", "-n", "'salut'", "\"les $NOOB XD", "\"XPTDRRRRRRRRRRRRRRRRRRRRRRRRR haha jss plie de rire XD $NOOB is nnob\"");
-
+	t_quote_status quote_status;
 	int	i;
+	int j;
+
+	ft_init_quote_status(&quote_status);
 	i = 0;
-	while (testargs[i])
+	j = 0;
+	while (str[i])
 	{
-		if (!is_d_quoted(testargs[i]))
+		update_quote_status(str[i], &quote_status);
+		if (str[i] == '$' && !quote_status.in_squotes)
 		{
-			i++;
-			continue ;
+			int chr = ft_char_next_index(&str[i], ' ');
+
+			char *evar = ft_substr(str, i + 1, chr - 1);
+			char *evar_value = getenv(evar);
+			j += ft_strlen(evar_value) - 1;
+			i += ft_strlen(evar);
 		}
-		int	j;
-
-		j = 0;
-		while (testargs[i][j])
-		{
-			if (testargs[i][j] == '$')
-			{
-				int chr = ft_char_next_index(&testargs[i][j], ' ');
-				//int	k = 0;
-
-
-				// printf("\n_%s_\n", ft_substr(testargs[i], j + 1, chr - 1));
-				ft_putstr_fd(getenv(ft_substr(testargs[i], j + 1, chr - 1)), 1);
-
-
-				// printf("\nj: %d chr: %d\n", j, chr);
-			}
-			else
-				ft_putchar_fd(testargs[i][j], 1);
-			j++;
-		}
-
 		i++;
+		j++;
 	}
+	return (j);
+}
 
-	// printf("\n%s\n", getenv("NOOB"));
+char	*expand_vars(char *str)
+{
+	t_quote_status quote_status;
+	int	j;
+	int k;
+	char *expanded_char;
+
+	ft_init_quote_status(&quote_status);
+	int exp_size = calc_expanded_size(str);
+	expanded_char = ft_calloc(exp_size + 1, sizeof(char));
+	j = 0;
+	k = 0;
+	while (str[j])
+	{
+		update_quote_status(str[j], &quote_status);
+		if (str[j] == '$' && !quote_status.in_squotes)
+		{
+			int chr = ft_char_next_index(&str[j], ' ');
+
+			char *evar = ft_substr(str, j + 1, chr - 1);
+			char *evar_value = getenv(evar);
+			int l = 0;
+			while (evar_value && evar_value[l])
+			{
+				expanded_char[k] = evar_value[l];
+				k++;
+				l++;
+			}
+			if (!evar_value)
+				k--;
+			j += ft_strlen(evar);
+		}
+		else
+			expanded_char[k] = str[j];
+		j++;
+		k++;
+	}
+	free(str);
+
+	printf("\n");
+	printf("after: \n_%s_", expanded_char);
+	return (expanded_char);
 }
 
 int	ft_wawa(int ac, char *av[], char *ev[])
@@ -270,9 +306,21 @@ int	ft_wawa(int ac, char *av[], char *ev[])
 	char *lineread = readline(prompt);
 	while (lineread)
 	{
+
+		{
+			int x = 0;
+			char **testargs = make_chartab(5, "echo", "-n", "'salut'$XDD", "\"les $NOOB XD", "\"XPTDRRRRRRRRRRRRRRRRRRRRRRRRR haha jss plie de rire XD $NOOB is nnob\"");
+			while (testargs[x])
+			{
+				printf("%s\n", expand_vars(testargs[x]));
+				x++;
+			}
+
+		}
+
 		//printf("%s", lineread);
 		if (lineread[0] == 49)
-			ft_main(ac, av, ev, "< test | $echo xd | cat");
+			ft_main(ac, av, ev, "< $XDD | $echo xd | cat");
 		else
 			ft_main(ac, av, ev, lineread);
 		printf("\n");
