@@ -6,7 +6,7 @@
 /*   By: wneel <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/05 15:50:27 by wneel             #+#    #+#             */
-/*   Updated: 2024/03/13 16:15:55 by wneel            ###   ########.fr       */
+/*   Updated: 2024/03/14 17:31:49 by wneel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -173,6 +173,23 @@ int	ft_char_next_index(char *str, char to_find)
 	return (-1);
 }
 
+int	var_name_end(char *str)
+{
+	unsigned int	i;
+
+	i = 0;
+	while (str[i] != '\0')
+	{
+		if (ft_isalnum(str[i]) || str[i] == '_')
+		{
+			i++;
+			continue ;
+		}
+		return (i);
+	}
+	return (i);
+}
+
 int	calc_expanded_size(char *str)
 {
 	t_quote_status quote_status;
@@ -187,9 +204,9 @@ int	calc_expanded_size(char *str)
 		update_quote_status(str[i], &quote_status);
 		if (str[i] == '$' && !quote_status.in_squotes)
 		{
-			int chr = ft_char_next_index(&str[i], ' ');
+			int chr = var_name_end(&str[j + 1]);
 
-			char *evar = ft_substr(str, i + 1, chr - 1);
+			char *evar = ft_substr(str, i + 1, chr);
 			char *evar_value = getenv(evar);
 			j += ft_strlen(evar_value) - 1;
 			i += ft_strlen(evar);
@@ -198,6 +215,29 @@ int	calc_expanded_size(char *str)
 		j++;
 	}
 	return (j);
+}
+
+
+void	assign_evar(char *str, char *expanded_char, int *j, int *k)
+{
+	char	*evar_value;
+	char	*evar;
+	int		chr;
+	int		l;
+
+	l = 0;
+	chr = var_name_end(&str[*j + 1]);
+	evar = ft_substr(str, *j + 1, chr);
+	evar_value = getenv(evar);
+	printf("\nchr: %d, evar: _%s_ value: %s sreach from : '%s', j: %d\n", chr, evar, evar_value, &str[*j], *j);
+	while (evar_value && evar_value[l])
+	{
+		expanded_char[*k] = evar_value[l];
+		*k += 1;
+		l++;
+	}
+	*k -= 1;
+	*j += ft_strlen(evar);
 }
 
 char	*expand_vars(char *str)
@@ -216,30 +256,13 @@ char	*expand_vars(char *str)
 	{
 		update_quote_status(str[j], &quote_status);
 		if (str[j] == '$' && !quote_status.in_squotes)
-		{
-			int chr = ft_char_next_index(&str[j], ' ');
-
-			char *evar = ft_substr(str, j + 1, chr - 1);
-			char *evar_value = getenv(evar);
-			int l = 0;
-			while (evar_value && evar_value[l])
-			{
-				expanded_char[k] = evar_value[l];
-				k++;
-				l++;
-			}
-			if (!evar_value)
-				k--;
-			j += ft_strlen(evar);
-		}
+			assign_evar(str, expanded_char, &j, &k);
 		else
 			expanded_char[k] = str[j];
 		j++;
 		k++;
 	}
 	free(str);
-
-	printf("\n");
 	return (expanded_char);
 }
 
@@ -271,6 +294,8 @@ int	ft_wawa(int ac, char *av[], char *ev[])
 			exec_line(ac, av, ev, "< $XDD | $echo xd | cat");
 		else if (lineread[0] == 50)
 			exec_line(ac, av, ev, "< xdfile | echo sltcv2 > mdrfile | echo \"fail2 > failfile | echo ouicv2 > mdrfile2 | cat");
+		else if (lineread[0] == 51)
+			exec_line(ac, av, ev, "echo \"\"xdxd\"$VARW\"");
 		else
 			exec_line(ac, av, ev, lineread);
 		printf("\n");
