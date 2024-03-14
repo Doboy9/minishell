@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wneel <marvin@42.fr>                       +#+  +:+       +#+        */
+/*   By: dboire <dboire@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/05 15:46:47 by wneel             #+#    #+#             */
-/*   Updated: 2024/03/05 15:50:08 by wneel            ###   ########.fr       */
+/*   Updated: 2024/03/14 16:11:08 by dboire           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 
 int	main(int ac, char *av[], char *ev[])
 {
-	ft_wawa(ac, av, ev);
+	//ft_wawa(ac, av, ev);
 	ft_doboy(ac, av, ev);
 	return (0);
 }
