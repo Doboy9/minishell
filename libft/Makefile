@@ -2,7 +2,7 @@ NAME = libft.a
 
 CC = cc
 
-CFLAGS = -Wall -Wextra -Werror
+CFLAGS = -g -Wall -Wextra -Werror
 
 SRC =               \
 	ft_isalpha.c      \
@@ -10,6 +10,7 @@ SRC =               \
 	ft_isascii.c      \
 	ft_isprint.c      \
 	ft_isdigit.c      \
+	ft_iswhitespace.c      \
 	ft_bzero.c        \
 	ft_calloc.c       \
 	ft_memset.c       \

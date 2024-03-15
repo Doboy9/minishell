@@ -6,64 +6,12 @@
 /*   By: wneel <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/05 15:50:27 by wneel             #+#    #+#             */
-/*   Updated: 2024/03/15 16:10:03 by wneel            ###   ########.fr       */
+/*   Updated: 2024/03/15 16:31:11 by wneel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "wawa.h"
 
-const char	*word_cutters = " \t\n|&()<>";
-
-int	ft_is_word_cutter(const char *str, int index)
-{
-	int				i;
-	int				j;
-	int				is_word_cutter;
-	t_quote_status	quote_status;
-
-	i = 0;
-	j = 0;
-	is_word_cutter = 0;
-	ft_init_quote_status(&quote_status);
-	while (i < index)
-	{
-		update_quote_status(str[i], &quote_status);
-		i++;
-	}
-	while (word_cutters[j] != '\0')
-	{
-		if (word_cutters[j] == str[i])
-			is_word_cutter = 1;
-		j++;
-	}
-	if (quote_status.in_dquotes || quote_status.in_squotes)
-		is_word_cutter = 0;
-	return (is_word_cutter);
-}
-
-int	parse_word(char *bash_word)
-{
-	int	word_len;
-
-	word_len = ft_strlen(bash_word);
-	if (word_len == 1)
-	{
-		if (bash_word[0] == '|')
-			return (PIPE);
-		if (bash_word[0] == '<')
-			return (ANGLE_BRACE_LEFT);
-		if (bash_word[0] == '>')
-			return (ANGLE_BRACE_RIGHT);
-	}
-	if (word_len == 2)
-	{
-		if (bash_word[0] == '<' && bash_word[1] == '<')
-			return (DOUBLE_ANGLE_BRACE_LEFT);
-		if (bash_word[0] == '>' && bash_word[1] == '>')
-			return (DOUBLE_ANGLE_BRACE_RIGHT);
-	}
-	return (TEXT);
-}
 
 t_text_read	**parse_read_input(char *lineread)
 {
@@ -112,117 +60,6 @@ int	exec_line(int ac, char *av[], char *ev[], char *lineread)
 	}
 	ft_print_text_read(text_read);
 	return (0);
-}
-
-int	ft_char_next_index(char *str, char to_find)
-{
-	unsigned int	i;
-
-	i = 0;
-	while (str[i] != '\0')
-	{
-		if (str[i] == to_find)
-			return (i);
-		if (str[i] != to_find)
-			i++;
-	}
-	return (-1);
-}
-
-int	var_name_end(char *str)
-{
-	unsigned int	i;
-
-	i = 0;
-	while (str[i] != '\0')
-	{
-		if (ft_isalnum(str[i]) || str[i] == '_')
-		{
-			i++;
-			continue ;
-		}
-		return (i);
-	}
-	return (i);
-}
-
-int	calc_expanded_size(char *str)
-{
-	t_quote_status	quote_status;
-	char			*evar_value;
-	char			*evar;
-	int				chr;
-	int				j;
-	int				i;
-
-	ft_init_quote_status(&quote_status);
-	i = 0;
-	j = 0;
-	while (str[i])
-	{
-		update_quote_status(str[i], &quote_status);
-		if (str[i] == '$' && !quote_status.in_squotes)
-		{
-			chr = var_name_end(&str[j + 1]);
-			evar = ft_substr(str, i + 1, chr);
-			evar_value = getenv(evar);
-			j += ft_strlen(evar_value) - 1;
-			i += ft_strlen(evar);
-		}
-		i++;
-		j++;
-	}
-	return (j);
-}
-
-void	assign_evar(char *str, char *expanded_char, int *j, int *k)
-{
-	char	*evar_value;
-	char	*evar;
-	int		chr;
-	int		l;
-
-	l = 0;
-	chr = var_name_end(&str[*j + 1]);
-	evar = ft_substr(str, *j + 1, chr);
-	evar_value = getenv(evar);
-	printf("\nchr: %d, evar: _%s_ value: %s sreach from : '%s', j: \
-			%d\n", chr, evar, evar_value, &str[*j], *j);
-	while (evar_value && evar_value[l])
-	{
-		expanded_char[*k] = evar_value[l];
-		*k += 1;
-		l++;
-	}
-	*k -= 1;
-	*j += ft_strlen(evar);
-}
-
-char	*expand_vars(char *str)
-{
-	t_quote_status	quote_status;
-	char			*expanded_char;
-	int				exp_size;
-	int				k;
-	int				j;
-
-	ft_init_quote_status(&quote_status);
-	exp_size = calc_expanded_size(str);
-	expanded_char = ft_calloc(exp_size + 1, sizeof(char));
-	j = 0;
-	k = 0;
-	while (str[j])
-	{
-		update_quote_status(str[j], &quote_status);
-		if (str[j] == '$' && !quote_status.in_squotes)
-			assign_evar(str, expanded_char, &j, &k);
-		else
-			expanded_char[k] = str[j];
-		j++;
-		k++;
-	}
-	free(str);
-	return (expanded_char);
 }
 
 void	test_dash_n(void)

@@ -6,7 +6,7 @@
 /*   By: wneel <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/30 16:13:37 by wneel             #+#    #+#             */
-/*   Updated: 2023/12/08 11:20:49 by wneel            ###   ########.fr       */
+/*   Updated: 2024/03/15 16:31:48 by wneel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,15 @@ int		ft_isascii(int c);
  * @return nonzero if the character c is printable and zero if not.
  */
 int		ft_isprint(int c);
+
+/**
+ * Checks whether c is a whitespace character or not
+ * according to `isspace(3)`.
+ *
+ * @param c unsigned char or EOF.
+ * @return nonzero if the character c is whitespace and zero if not.
+ */
+int		ft_iswhitespace(char c);
 
 /**
  * Calculates the length of the string pointed to by s,

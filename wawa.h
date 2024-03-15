@@ -6,7 +6,7 @@
 /*   By: wneel <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/05 15:50:31 by wneel             #+#    #+#             */
-/*   Updated: 2024/03/15 16:01:47 by wneel            ###   ########.fr       */
+/*   Updated: 2024/03/15 16:25:37 by wneel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,9 @@ char	**ft_split_bash_words(char const *s);
 int		ft_wawa(int ac, char *av[], char *ev[]);
 void	ft_print_text_read(t_text_read **text_read);
 void	ft_print_split(char **splitted);
+int		var_name_end(char *str);
+int		calc_expanded_size(char *str, int i);
+void	assign_evar(char *str, char *expanded_char, int *j, int *k);
 char	*expand_vars(char *str);
 void	update_quote_status(char c, t_quote_status *quote_status);
 void	ft_init_quote_status(t_quote_status *quote_status);
@@ -52,4 +55,5 @@ int		char_tab_len(char **tab);
 int		reverse_bool(int bool);
 int		parse_flags(char **flags);
 char	**make_chartab(int n, ...);
+int		parse_word(char *bash_word);
 #endif

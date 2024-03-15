@@ -6,7 +6,7 @@
 /*   By: wneel <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/15 15:53:51 by wneel             #+#    #+#             */
-/*   Updated: 2024/03/15 15:54:17 by wneel            ###   ########.fr       */
+/*   Updated: 2024/03/15 16:27:21 by wneel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,4 +48,28 @@ char	**make_chartab(int n, ...)
 	}
 	va_end(params);
 	return (output);
+}
+
+int	parse_word(char *bash_word)
+{
+	int	word_len;
+
+	word_len = ft_strlen(bash_word);
+	if (word_len == 1)
+	{
+		if (bash_word[0] == '|')
+			return (PIPE);
+		if (bash_word[0] == '<')
+			return (ANGLE_BRACE_LEFT);
+		if (bash_word[0] == '>')
+			return (ANGLE_BRACE_RIGHT);
+	}
+	if (word_len == 2)
+	{
+		if (bash_word[0] == '<' && bash_word[1] == '<')
+			return (DOUBLE_ANGLE_BRACE_LEFT);
+		if (bash_word[0] == '>' && bash_word[1] == '>')
+			return (DOUBLE_ANGLE_BRACE_RIGHT);
+	}
+	return (TEXT);
 }

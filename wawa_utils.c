@@ -6,16 +6,11 @@
 /*   By: wneel <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/05 15:50:27 by wneel             #+#    #+#             */
-/*   Updated: 2024/03/15 15:53:13 by wneel            ###   ########.fr       */
+/*   Updated: 2024/03/15 16:31:04 by wneel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "wawa.h"
-
-static int	ft_static_is_char_whitespace(char c)
-{
-	return ((c > 7 && c < 14) || (c == 32));
-}
 
 static char	*ft_static_get_part(const char *str, int i)
 {
@@ -57,7 +52,7 @@ static void	ft_static_count_alloc_space(
 	*total_space = 0;
 	while (str[i] != '\0')
 	{
-		if (ft_static_is_char_whitespace(str[i]))
+		if (ft_iswhitespace(str[i]))
 			i++;
 		else
 		{
@@ -85,7 +80,7 @@ static char	**ft_split_loop(
 	split_count = 0;
 	while (s[i] != '\0')
 	{
-		if (ft_static_is_char_whitespace(s[i]))
+		if (ft_iswhitespace(s[i]))
 			i++;
 		else
 		{
@@ -115,4 +110,33 @@ char	**ft_split_bash_words(char const *s)
 		return (0);
 	split = ft_split_loop(split, s);
 	return (split);
+}
+
+int	ft_is_word_cutter(const char *str, int index)
+{
+	t_quote_status	quote_status;
+	const char		*word_cutters;
+	int				is_word_cutter;
+	int				j;
+	int				i;
+
+	i = 0;
+	j = 0;
+	is_word_cutter = 0;
+	word_cutters = " \t\n|&()<>";
+	ft_init_quote_status(&quote_status);
+	while (i < index)
+	{
+		update_quote_status(str[i], &quote_status);
+		i++;
+	}
+	while (word_cutters[j] != '\0')
+	{
+		if (word_cutters[j] == str[i])
+			is_word_cutter = 1;
+		j++;
+	}
+	if (quote_status.in_dquotes || quote_status.in_squotes)
+		is_word_cutter = 0;
+	return (is_word_cutter);
 }
