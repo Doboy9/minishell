@@ -6,7 +6,7 @@
 /*   By: wneel <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/15 16:22:50 by wneel             #+#    #+#             */
-/*   Updated: 2024/03/15 16:25:01 by wneel            ###   ########.fr       */
+/*   Updated: 2024/03/15 17:15:04 by wneel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,8 @@ int	calc_expanded_size(char *str, int i)
 			evar_value = getenv(evar);
 			j += ft_strlen(evar_value) - 1;
 			i += ft_strlen(evar);
+			free(evar);
+			free(evar_value);
 		}
 		i++;
 		j++;
@@ -76,6 +78,7 @@ void	assign_evar(char *str, char *expanded_char, int *j, int *k)
 	}
 	*k -= 1;
 	*j += ft_strlen(evar);
+	free(evar);
 }
 
 char	*expand_vars(char *str)
