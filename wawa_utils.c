@@ -6,7 +6,7 @@
 /*   By: wneel <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/05 15:50:27 by wneel             #+#    #+#             */
-/*   Updated: 2024/03/07 16:49:39 by wneel            ###   ########.fr       */
+/*   Updated: 2024/03/15 15:53:13 by wneel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,9 @@ static char	*ft_static_get_part(const char *str, int i)
 
 	part_len = 0;
 	j = i;
-	while ((str[i] != '\0' && !ft_is_word_cutter(str, i) && !ft_is_word_cutter(str, j)) || (str[i] != '\0' && ft_is_word_cutter(str, i) && str[i] == str[j]))
+	while ((str[i] != '\0' && !ft_is_word_cutter(str, i)
+			&& !ft_is_word_cutter(str, j)) || (str[i] != '\0'
+			&& ft_is_word_cutter(str, i) && str[i] == str[j]))
 	{
 		part_len++;
 		i++;
