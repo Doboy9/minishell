@@ -6,7 +6,7 @@
 /*   By: wneel <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/05 15:50:27 by wneel             #+#    #+#             */
-/*   Updated: 2024/03/16 10:54:04 by wneel            ###   ########.fr       */
+/*   Updated: 2024/03/16 11:24:39 by wneel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,6 +71,70 @@ void	free_text_read(t_text_read	**text_read)
 	free(text_read);
 }
 
+int	len_without_extra_quotes(char *str)
+{
+	t_quote_status	qstatus;
+	int		last_qstatus;
+	int		i;
+	int		j;
+
+	i = 0;
+	j = 0;
+	last_qstatus = 0;
+	ft_init_quote_status(&qstatus);
+	while (str[i] != '\0')
+	{
+		update_quote_status(str[i], &qstatus);
+		if ((qstatus.in_dquotes || qstatus.in_squotes) == last_qstatus)
+			j++;
+		i++;
+		last_qstatus = (qstatus.in_dquotes || qstatus.in_squotes);
+	}
+	return (j);
+}
+
+char	*remove_extra_quotes(char *str)
+{
+	t_quote_status	qstatus;
+	char	*without_quotes;
+	int		last_qstatus;
+	int		i;
+	int		j;
+
+	i = 0;
+	j = 0;
+	last_qstatus = 0;
+	without_quotes = ft_calloc(len_without_extra_quotes(str) \
+		+ 1, sizeof(char));
+	ft_init_quote_status(&qstatus);
+	while (str[i] != '\0')
+	{
+		update_quote_status(str[i], &qstatus);
+		if ((qstatus.in_dquotes || qstatus.in_squotes) == last_qstatus)
+		{
+			without_quotes[j] = str[i];
+			j++;
+		}
+		i++;
+		last_qstatus = (qstatus.in_dquotes || qstatus.in_squotes);
+	}
+	free(str);
+	return (without_quotes);
+}
+
+t_text_read	**parse_extra_quotes(t_text_read	**text_read)
+{
+	int		i;
+
+	i = 0;
+	while (text_read[i])
+	{
+		text_read[i]->raw_text = remove_extra_quotes(text_read[i]->raw_text);
+		i++;
+	}
+	return (text_read);
+}
+
 int	exec_line(char *ev[], char *lineread)
 {
 	t_text_read	**text_read;
@@ -81,6 +145,7 @@ int	exec_line(char *ev[], char *lineread)
 	text_read = NULL;
 	text_read = parse_read_input(lineread);
 	text_read = parse_variables(text_read, &error_status);
+	text_read = parse_extra_quotes(text_read);
 	if (!error_status)
 		ft_print_text_read(text_read);
 	free_text_read(text_read);

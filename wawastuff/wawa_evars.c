@@ -6,7 +6,7 @@
 /*   By: wneel <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/15 16:22:50 by wneel             #+#    #+#             */
-/*   Updated: 2024/03/15 17:15:04 by wneel            ###   ########.fr       */
+/*   Updated: 2024/03/16 11:35:37 by wneel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,6 @@ int	calc_expanded_size(char *str, int i)
 			j += ft_strlen(evar_value) - 1;
 			i += ft_strlen(evar);
 			free(evar);
-			free(evar_value);
 		}
 		i++;
 		j++;
