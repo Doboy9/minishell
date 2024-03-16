@@ -6,7 +6,7 @@
 /*   By: dboire <dboire@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/14 16:45:12 by dboire            #+#    #+#             */
-/*   Updated: 2024/03/14 18:44:28 by dboire           ###   ########.fr       */
+/*   Updated: 2024/03/16 16:25:28 by dboire           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,8 +36,7 @@ void	ft_builtins(int ac, char *av[], char *ev[])
 	}
 	if (ft_strncmp(av[1], "pwd", 3) == 0)
 	{
-		//commandpwd->find_pwd = find_pwd(ev);
-		//printf("%s", ev[find_pwd]);
+		getcwd(NULL, 0);
 	}
 	if (ft_strncmp(av[1], "env", 3) == 0)
 	{
