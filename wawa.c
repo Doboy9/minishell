@@ -6,7 +6,7 @@
 /*   By: wneel <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/05 15:50:27 by wneel             #+#    #+#             */
-/*   Updated: 2024/03/15 17:14:02 by wneel            ###   ########.fr       */
+/*   Updated: 2024/03/16 10:54:04 by wneel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ t_text_read	**parse_read_input(char *lineread)
 	return (text_read);
 }
 
-t_text_read	**parse_variables(t_text_read	**text_read)
+t_text_read	**parse_variables(t_text_read	**text_read, int *error_status)
 {
 	int	i;
 
@@ -47,23 +47,20 @@ t_text_read	**parse_variables(t_text_read	**text_read)
 	while (text_read[i])
 	{
 		if (!is_well_quoted(text_read[i]->raw_text))
-			return (0); // EXIT QUOTE RROR
+		{
+			*error_status = 1;
+			return (text_read);
+		}
 		text_read[i]->raw_text = expand_vars(text_read[i]->raw_text);
 		i++;
 	}
 	return (text_read);
 }
 
-int	exec_line(char *ev[], char *lineread)
+void	free_text_read(t_text_read	**text_read)
 {
-	t_text_read	**text_read;
-	int				i;
+	int	i;
 
-	(void)ev;
-	text_read = NULL;
-	text_read = parse_read_input(lineread);
-	text_read = parse_variables(text_read);
-	ft_print_text_read(text_read);
 	i = 0;
 	while (text_read[i])
 	{
@@ -72,6 +69,21 @@ int	exec_line(char *ev[], char *lineread)
 		i++;
 	}
 	free(text_read);
+}
+
+int	exec_line(char *ev[], char *lineread)
+{
+	t_text_read	**text_read;
+	int				error_status;
+
+	(void)ev;
+	error_status = 0;
+	text_read = NULL;
+	text_read = parse_read_input(lineread);
+	text_read = parse_variables(text_read, &error_status);
+	if (!error_status)
+		ft_print_text_read(text_read);
+	free_text_read(text_read);
 	return (0);
 }
 
@@ -105,7 +117,7 @@ int	ft_wawa(int ac, char *av[], char *ev[])
 	while (lineread)
 	{
 		if (lineread[0] == 49)
-			exec_line(ev, "< $XDD | $echo xd | cat");
+			exec_line(ev, "< infile | echo xd | cat");
 		else if (lineread[0] == 50)
 			exec_line(ev, "< xdfile | echo sltcv2 > mdrfile \
 				| echo \"fail2 > failfile | echo ouicv2 > mdrfile2 | cat");
@@ -115,8 +127,7 @@ int	ft_wawa(int ac, char *av[], char *ev[])
 			exec_line(ev, lineread);
 		printf("\n");
 		add_history(lineread);
-		if (lineread[0] != 49)
-			free(lineread);
+		free(lineread);
 		lineread = readline(prompt);
 	}
 	return (0);
