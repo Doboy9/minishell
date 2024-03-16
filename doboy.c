@@ -6,7 +6,7 @@
 /*   By: dboire <dboire@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/14 16:13:22 by dboire            #+#    #+#             */
-/*   Updated: 2024/03/14 17:08:01 by dboire           ###   ########.fr       */
+/*   Updated: 2024/03/16 15:27:36 by dboire           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,12 @@
 
 int	ft_doboy(int ac, char *av[], char *ev[])
 {
-	// (void)ac;
-	// (void)av;
-	// (void)ev;
+	(void)ac;
+	(void)av;
+	(void)ev;
+	t_envexp *envexp;
+	
+	envexp = ft_calloc(sizeof(t_envexp), 1);
 	// const char *prompt = "easyshell XD >";
 	// char *lineread = readline(prompt);
 	// while (lineread)
@@ -29,13 +32,16 @@ int	ft_doboy(int ac, char *av[], char *ev[])
 		// 	exec_line(ac, av, ev, lineread);
 		
 		
-		
-		ft_builtins(ac, av, ev);
+		// ft_copyenv(ev, envexp); // need to free envexp
+		ft_copyexp(ev, envexp);
+		//ft_builtins(ac, av, ev);
 		printf("\n");
 	// 	add_history(lineread);
 	// 	if (lineread[0] != 49)
 	// 		free(lineread);
 	// 	lineread = readline(prompt);
 	// }
+	// if (envexp)
+	// 	free(envexp);
 	return (0);
 }

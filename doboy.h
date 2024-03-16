@@ -6,7 +6,7 @@
 /*   By: dboire <dboire@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/14 16:12:03 by dboire            #+#    #+#             */
-/*   Updated: 2024/03/14 18:46:39 by dboire           ###   ########.fr       */
+/*   Updated: 2024/03/16 15:27:13 by dboire           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ typedef struct s_commandcd
 	int		abs_or_rel; // 0 or 1 to see if the path is absolute or relative. If absolute, **command_argv take the string, if not, take the pwd in env ?
 }			t_commandcd;
 
-typedef struct s_commandpwd
+typedef struct s_commandpwd // GET CWD
 {
 	// int		command_argc;
 	char	*command; // The pwd char*
@@ -53,9 +53,19 @@ typedef struct s_pipex
 	int		command; // How many commands do we have to process / execute
 }	t_pipex;
 
-int			ft_doboy(int ac, char *av[], char *ev[]);
-void		ft_builtins(int ac, char *av[], char *ev[]);
-void		ft_changedir(int ac, char *av[]);
-int			find_pwd(char **env);
+typedef struct s_envexp
+{
+	char	**envcopy; // Copy of the env of the pc
+	char	**expcopy; // Copy of the export of the pc
+}	t_envexp;
+
+int		ft_doboy(int ac, char *av[], char *ev[]);
+void	ft_builtins(int ac, char *av[], char *ev[]);
+void	ft_changedir(int ac, char *av[]);
+int		find_pwd(char **env);
+void	ft_copyenv(char *ev[], t_envexp *envexp);
+void	ft_write_exp(t_envexp *envexp);
+void	ft_copyexp(char *ev[], t_envexp *envexp);
+char	*ft_strdup2(const char *s);
 
 #endif
