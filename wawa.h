@@ -6,7 +6,7 @@
 /*   By: wneel <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/05 15:50:31 by wneel             #+#    #+#             */
-/*   Updated: 2024/03/15 16:25:37 by wneel            ###   ########.fr       */
+/*   Updated: 2024/03/19 16:00:38 by wneel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,15 +26,60 @@ enum SPECIAL_CHARACTERS {
 	DOUBLE_ANGLE_BRACE_RIGHT = 5
 };
 
+enum INPUTS {
+	STANDARD_INPUT = 0,
+	FILE_INPUT = 1,
+	PIPE_INPUT = 2,
+	HERE_DOC_INPUT = 3
+};
+
+typedef struct	s_input
+{
+	int		file_fd;
+	char	*file_path;
+	int		input_type;
+}				t_input;
+
+enum OUTPUTS {
+	STANDARD_OUTPUT = 0,
+	FILE_OUTPUT = 1,
+	PIPE_OUTPUT = 2
+};
+
+typedef struct	s_output
+{
+	int		file_fd;
+	char	*file_path;
+	int		output_type;
+	int		append;
+}				t_output;
+
+typedef struct	s_command
+{
+	t_input	**inputs;
+	int		argc;
+	char	**argv;
+	char	*command;
+	int		flag_n;
+	t_output	**outputs;
+}				t_command;
+
 typedef struct	s_quote_status
 {
 	int in_squotes;
 	int in_dquotes;
 }				t_quote_status;
 
+typedef struct s_cmd_cursor
+{
+	int	start;
+	int	end;
+}						t_cmd_cursor;
+
 typedef struct s_text_read
 {
 	char	*raw_text;
+	char	*exp_text;
 	int		is_metachar;
 	int		is_attribution;
 }				t_text_read;
@@ -42,7 +87,9 @@ typedef struct s_text_read
 int		ft_is_word_cutter(const char *str, int index);
 char	**ft_split_bash_words(char const *s);
 int		ft_wawa(int ac, char *av[], char *ev[]);
-void	ft_print_text_read(t_text_read **text_read);
+void	ft_print_text_read_tab(t_text_read **text_read);
+void	ft_print_text_read_el(t_text_read *text_read);
+void	ft_print_cmd_el(t_command *command);
 void	ft_print_split(char **splitted);
 int		var_name_end(char *str);
 int		calc_expanded_size(char *str, int i);
