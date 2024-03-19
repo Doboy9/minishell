@@ -281,6 +281,63 @@ void	set_cmd_outputs(t_text_read	**text_read, t_cmd_cursor *cursors, t_command *
 		i++;
 	}
 }
+
+int	is_redirection(t_text_read *el)
+{
+	if (el->is_metachar == ANGLE_BRACE_LEFT)
+		return (1);
+	if (el->is_metachar == ANGLE_BRACE_RIGHT)
+		return (1);
+	if (el->is_metachar == DOUBLE_ANGLE_BRACE_LEFT)
+		return (1);
+	if (el->is_metachar == DOUBLE_ANGLE_BRACE_RIGHT)
+		return (1);
+	return (0);
+}
+
+void	set_argc(t_text_read	**text_read, t_cmd_cursor *cursors, t_command *command)
+{
+	int	argc;
+	int	i;
+
+	i = 0;
+	argc = 0;
+	while (i < cursors->end)
+	{
+		if (is_redirection(text_read[i]))
+			i	++;
+		else
+			argc++;
+		i++;
+	}
+	command->argc = argc;
+}
+
+void	set_cmd_args(t_text_read	**text_read, t_cmd_cursor *cursors, t_command *command)
+{
+	int	ac;
+	int	i;
+
+	i = 0;
+	ac = 0;
+	set_argc(text_read, cursors, command);
+	command->argv = NULL;
+	command->argv = ft_calloc(command->argc + 1, sizeof(char *));
+	while (i < cursors->end)
+	{
+		if (is_redirection(text_read[i]))
+			i++;
+		else
+		{
+			if (ac == 0)
+				command->command = ft_strdup(text_read[i]->exp_text);
+			command->argv[ac] = ft_strdup(text_read[i]->exp_text);
+			ac++;
+		}
+		i++;
+	}
+}
+
 int	exec_line(char *ev[], char *lineread)
 {
 	t_text_read	**text_read;
@@ -292,8 +349,31 @@ int	exec_line(char *ev[], char *lineread)
 	text_read = parse_read_input(lineread);
 	text_read = parse_variables(text_read, &error_status);
 	text_read = parse_extra_quotes(text_read);
-	if (!error_status)
-		ft_print_text_read(text_read);
+
+	{
+		t_cmd_cursor	cmd_cursors;
+		t_command	**command_tab;
+		int			command_count;
+
+		command_count = get_command_count(text_read);
+		command_tab = ft_calloc(command_count + 1, sizeof(t_command *));
+		cmd_cursors.start = 0;
+		cmd_cursors.end = 0;
+		{
+			t_command	*command;
+
+			command = NULL;
+			command = malloc(sizeof(t_command));
+			cmd_cursors.end = get_last_token_idx(text_read, &cmd_cursors);
+			set_cmd_inputs(text_read, &cmd_cursors, command);
+			set_cmd_outputs(text_read, &cmd_cursors, command);
+			set_cmd_args(text_read, &cmd_cursors, command);
+			ft_print_cmd_el(command);
+		}
+	}
+
+	// if (!error_status)
+	// 	ft_print_text_read_tab(text_read);
 	free_text_read(text_read);
 	return (0);
 }
