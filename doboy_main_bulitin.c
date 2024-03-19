@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: dboire <dboire@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/03/19 14:18:54 by dboire            #+#    #+#             */
-/*   Updated: 2024/03/19 16:20:25 by dboire           ###   ########.fr       */
+/*   Created: 2024/03/14 16:13:22 by dboire            #+#    #+#             */
+/*   Updated: 2024/03/18 15:35:16 by dboire           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,19 +17,29 @@ int	ft_doboy(int ac, char *av[], char *ev[])
 	(void)ac;
 	(void)av;
 	(void)ev;
-	int i = 0;
 	const char	*prompt;
 	char		*lineread;
-	char		**lineread_split;
+	t_envexp *envexp;
 	
+	envexp = ft_calloc(sizeof(t_envexp), 1);
 	prompt = "easyshell -_- >";
 	lineread = readline(prompt);
-	lineread_split = ft_split(lineread, ' ');
-	while(lineread_split[i])
-		i++;
 	while (lineread)
 	{
-		ft_pipex(i, lineread_split, ev);
+		if (ft_strncmp(lineread, "env", 3) == 0)
+			ft_copyenv(ev, envexp);
+		else if (ft_strncmp(lineread, "export", 6) == 0)
+			ft_copyexp(ev, envexp);
+		else if (ft_strncmp(lineread, "pwd", 3) == 0)
+			printf("%s\n", getcwd(NULL, 0)); //ok, works
+		else if (ft_strncmp(lineread, "cd", 2) == 0) // Besoin de split le line read pour avoir le path
+			chdir("/nfs/homes"); //ok, working but need modif
+		else if (ft_strncmp(lineread, "echo", 4) == 0) // Besoin de split le lineread pour avoir ce qu il faut ecrire
+			printf("%s\n", lineread); // ok, working but need modif
+		else if (ft_strncmp(lineread, "exit", 4) == 0) // Function to free everything needed
+			exit(0); //ok, working but need modif
+		else // Will be implemented in the pipex
+			printf("%s: command not found\n", lineread); //ok, works
 		add_history(lineread);
 		free(lineread);
 		lineread = readline(prompt);
