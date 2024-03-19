@@ -136,6 +136,151 @@ t_text_read	**parse_extra_quotes(t_text_read	**text_read)
 	return (text_read);
 }
 
+int	get_command_count(t_text_read	**text_read)
+{
+	int	command_count;
+	int	i;
+
+	i = 0;
+	command_count = 1;
+	while (text_read[i])
+	{
+		if (text_read[i]->is_metachar == PIPE)
+			command_count += 1;
+		i++;
+	}
+	return (command_count);
+}
+
+int	get_last_token_idx(t_text_read	**text_read, t_cmd_cursor *cursors)
+{
+	int	i;
+
+	i = cursors->start;
+	while (text_read[i])
+	{
+		if (text_read[i]->is_metachar == PIPE)
+			return (i);
+		i++;
+	}
+	return (i);
+}
+
+void	alloc_cmd_inputs(t_text_read	**text_read, t_cmd_cursor *cursors, t_command *command)
+{
+	int	inputs;
+	int	i;
+
+	i = 0;
+	inputs = 0;
+	while (i < cursors->end)
+	{
+		if (text_read[i]->is_metachar == ANGLE_BRACE_LEFT)
+			inputs++;
+		if (text_read[i]->is_metachar == DOUBLE_ANGLE_BRACE_LEFT)
+			inputs++;
+		i++;
+	}
+	command->inputs = NULL;
+	command->inputs = ft_calloc(inputs + 1, sizeof(t_output *));
+}
+
+void	set_cmd_inputs(t_text_read	**text_read, t_cmd_cursor *cursors, t_command *command)
+{
+	int	cmd;
+	int	i;
+
+	i = 0;
+	cmd = 0;
+	alloc_cmd_inputs(text_read, cursors, command);
+	while (i < cursors->end)
+	{
+		if (text_read[i]->is_metachar == ANGLE_BRACE_LEFT)
+		{
+			command->inputs[cmd]->input_type = FILE_INPUT;
+			command->inputs[cmd]->file_path = text_read[i + 1]->exp_text;
+			cmd++;
+		}
+		if (text_read[i]->is_metachar == DOUBLE_ANGLE_BRACE_LEFT)
+		{
+			command->inputs[cmd]->input_type = HERE_DOC_INPUT;
+			command->inputs[cmd]->file_path = text_read[i + 1]->exp_text;
+			cmd++;
+		}
+		i++;
+	}
+}
+
+void	alloc_cmd_outputs(t_text_read	**text_read, t_cmd_cursor *cursors, t_command *command)
+{
+	int	outputs;
+	int	i;
+
+	i = 0;
+	outputs = 0;
+	while (i < cursors->end)
+	{
+		if (text_read[i]->is_metachar == ANGLE_BRACE_RIGHT)
+			outputs++;
+		if (text_read[i]->is_metachar == DOUBLE_ANGLE_BRACE_RIGHT)
+			outputs++;
+		i++;
+	}
+	command->outputs = NULL;
+	command->outputs = ft_calloc(outputs + 1, sizeof(t_output *));
+}
+
+void	alloc_each_cmd_output(t_text_read	**text_read, t_cmd_cursor *cursors, t_command *command)
+{
+	int	outputs;
+	int	i;
+
+	i = 0;
+	outputs = 0;
+	while (i < cursors->end)
+	{
+		if (text_read[i]->is_metachar == ANGLE_BRACE_RIGHT)
+		{
+			command->outputs[outputs] = malloc(sizeof(t_output));
+			outputs++;
+		}
+		if (text_read[i]->is_metachar == DOUBLE_ANGLE_BRACE_RIGHT)
+		{
+			command->outputs[outputs] = malloc(sizeof(t_output));
+			outputs++;
+		}
+		i++;
+	}
+}
+
+void	set_cmd_outputs(t_text_read	**text_read, t_cmd_cursor *cursors, t_command *command)
+{
+	int	cmd;
+	int	i;
+
+	i = 0;
+	cmd = 0;
+	alloc_cmd_outputs(text_read, cursors, command);
+	alloc_each_cmd_output(text_read, cursors, command);
+	while (i < cursors->end)
+	{
+		if (text_read[i]->is_metachar == ANGLE_BRACE_RIGHT)
+		{
+			command->outputs[cmd]->output_type = FILE_OUTPUT;
+			command->outputs[cmd]->file_path = text_read[i + 1]->exp_text;
+			command->outputs[cmd]->append = 0;
+			cmd++;
+		}
+		if (text_read[i]->is_metachar == DOUBLE_ANGLE_BRACE_RIGHT)
+		{
+			command->outputs[cmd]->output_type = FILE_OUTPUT;
+			command->outputs[cmd]->file_path = text_read[i + 1]->exp_text;
+			command->outputs[cmd]->append = 1;
+			cmd++;
+		}
+		i++;
+	}
+}
 int	exec_line(char *ev[], char *lineread)
 {
 	t_text_read	**text_read;
