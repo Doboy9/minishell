@@ -6,7 +6,7 @@
 /*   By: wneel <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/05 15:50:27 by wneel             #+#    #+#             */
-/*   Updated: 2024/03/19 16:00:45 by wneel            ###   ########.fr       */
+/*   Updated: 2024/03/19 16:09:27 by wneel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -185,6 +185,29 @@ void	alloc_cmd_inputs(t_text_read	**text_read, t_cmd_cursor *cursors, t_command 
 	command->inputs = ft_calloc(inputs + 1, sizeof(t_output *));
 }
 
+void	alloc_each_cmd_input(t_text_read	**text_read, t_cmd_cursor *cursors, t_command *command)
+{
+	int	inputs;
+	int	i;
+
+	i = 0;
+	inputs = 0;
+	while (i < cursors->end)
+	{
+		if (text_read[i]->is_metachar == ANGLE_BRACE_LEFT)
+		{
+			command->inputs[inputs] = malloc(sizeof(t_input));
+			inputs++;
+		}
+		if (text_read[i]->is_metachar == DOUBLE_ANGLE_BRACE_LEFT)
+		{
+			command->inputs[inputs] = malloc(sizeof(t_input));
+			inputs++;
+		}
+		i++;
+	}
+}
+
 void	set_cmd_inputs(t_text_read	**text_read, t_cmd_cursor *cursors, t_command *command)
 {
 	int	cmd;
@@ -193,6 +216,7 @@ void	set_cmd_inputs(t_text_read	**text_read, t_cmd_cursor *cursors, t_command *c
 	i = 0;
 	cmd = 0;
 	alloc_cmd_inputs(text_read, cursors, command);
+	alloc_each_cmd_input(text_read, cursors, command);
 	while (i < cursors->end)
 	{
 		if (text_read[i]->is_metachar == ANGLE_BRACE_LEFT)
