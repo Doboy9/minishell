@@ -6,7 +6,7 @@
 /*   By: wneel <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/05 15:50:27 by wneel             #+#    #+#             */
-/*   Updated: 2024/03/20 14:10:51 by wneel            ###   ########.fr       */
+/*   Updated: 2024/03/20 14:22:53 by wneel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ void	set_cmd_args(t_text_read	**text_read, t_cmd_cursor *cursors, t_command *com
 	}
 }
 
-void	make_command(t_cmd_cursor	*cmd_cursors, t_text_read	**text_read)
+t_command	*make_command(t_cmd_cursor	*cmd_cursors, t_text_read	**text_read)
 {
 	t_command	*command;
 
@@ -65,7 +65,8 @@ void	make_command(t_cmd_cursor	*cmd_cursors, t_text_read	**text_read)
 	set_cmd_inputs(text_read, cmd_cursors, command);
 	set_cmd_outputs(text_read, cmd_cursors, command);
 	set_cmd_args(text_read, cmd_cursors, command);
-	ft_print_cmd_el(command);
+	//ft_print_cmd_el(command);
+	return (command);
 }
 
 t_command	**make_command_tab(t_text_read	**text_read)
@@ -73,23 +74,27 @@ t_command	**make_command_tab(t_text_read	**text_read)
 	t_cmd_cursor	cmd_cursors;
 	t_command	**command_tab;
 	int			command_count;
+	int			i;
 
+	i = 0;
 	command_count = get_command_count(text_read);
 	command_tab = ft_calloc(command_count + 1, sizeof(t_command *));
 	cmd_cursors.start = 0;
 	cmd_cursors.end = 0;
 	while (command_count > 0)
 	{
-		make_command(&cmd_cursors, text_read);
+		command_tab[i] = make_command(&cmd_cursors, text_read);
 		command_count--;
 		cmd_cursors.start = cmd_cursors.end + 1;
+		i++;
 	}
+	return (command_tab);
 }
 
 t_command	**parse_line(char *lineread)
 {
 	t_text_read	**text_read;
-	t_command	**command_tab;
+	t_command	**command_tab = NULL;
 	int				error_status;
 
 	error_status = 0;
@@ -98,7 +103,16 @@ t_command	**parse_line(char *lineread)
 	text_read = parse_variables(text_read, &error_status);
 	text_read = parse_extra_quotes(text_read);
 
-	make_command_tab(text_read);
+	command_tab = make_command_tab(text_read);
+
+	{
+		int	i = 0;
+		while (command_tab[i])
+		{
+			ft_print_cmd_el(command_tab[i]);
+			i++;
+		}
+	}
 
 	// if (!error_status)
 	//free_text_read(text_read);
