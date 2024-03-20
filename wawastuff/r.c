@@ -6,28 +6,11 @@
 /*   By: wneel <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/15 15:53:51 by wneel             #+#    #+#             */
-/*   Updated: 2024/03/15 16:27:21 by wneel            ###   ########.fr       */
+/*   Updated: 2024/03/20 09:33:07 by wneel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../wawa.h"
-
-int	char_tab_len(char **tab)
-{
-	int	i;
-
-	i = 0;
-	while (tab[i])
-		i++;
-	return (i);
-}
-
-int	reverse_bool(int bool)
-{
-	if (bool == 0)
-		return (1);
-	return (0);
-}
 
 char	**make_chartab(int n, ...)
 {
