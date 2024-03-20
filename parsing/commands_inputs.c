@@ -6,7 +6,7 @@
 /*   By: wneel <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/20 09:17:26 by wneel             #+#    #+#             */
-/*   Updated: 2024/03/20 09:17:41 by wneel            ###   ########.fr       */
+/*   Updated: 2024/03/20 10:53:54 by wneel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ void	alloc_cmd_inputs(t_text_read	**text_read, t_cmd_cursor *cursors, t_command 
 	int	inputs;
 	int	i;
 
-	i = 0;
+	i = cursors->start;
 	inputs = 0;
 	while (i < cursors->end)
 	{
@@ -36,7 +36,7 @@ void	alloc_each_cmd_input(t_text_read	**text_read, t_cmd_cursor *cursors, t_comm
 	int	inputs;
 	int	i;
 
-	i = 0;
+	i = cursors->start;
 	inputs = 0;
 	while (i < cursors->end)
 	{
@@ -59,7 +59,7 @@ void	set_cmd_inputs(t_text_read	**text_read, t_cmd_cursor *cursors, t_command *c
 	int	cmd;
 	int	i;
 
-	i = 0;
+	i = cursors->start;
 	cmd = 0;
 	alloc_cmd_inputs(text_read, cursors, command);
 	alloc_each_cmd_input(text_read, cursors, command);

@@ -6,7 +6,7 @@
 /*   By: wneel <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/05 15:50:27 by wneel             #+#    #+#             */
-/*   Updated: 2024/03/20 10:45:21 by wneel            ###   ########.fr       */
+/*   Updated: 2024/03/20 14:10:51 by wneel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ void	set_argc(t_text_read	**text_read, t_cmd_cursor *cursors, t_command *command
 	int	argc;
 	int	i;
 
-	i = 0;
+	i = cursors->start;
 	argc = 0;
 	while (i < cursors->end)
 	{
@@ -35,7 +35,7 @@ void	set_cmd_args(t_text_read	**text_read, t_cmd_cursor *cursors, t_command *com
 	int	ac;
 	int	i;
 
-	i = 0;
+	i = cursors->start;
 	ac = 0;
 	set_argc(text_read, cursors, command);
 	command->argv = NULL;
@@ -55,44 +55,54 @@ void	set_cmd_args(t_text_read	**text_read, t_cmd_cursor *cursors, t_command *com
 	}
 }
 
-int	exec_line(char *ev[], char *lineread)
+void	make_command(t_cmd_cursor	*cmd_cursors, t_text_read	**text_read)
+{
+	t_command	*command;
+
+	command = NULL;
+	command = malloc(sizeof(t_command));
+	cmd_cursors->end = get_last_token_idx(text_read, cmd_cursors);
+	set_cmd_inputs(text_read, cmd_cursors, command);
+	set_cmd_outputs(text_read, cmd_cursors, command);
+	set_cmd_args(text_read, cmd_cursors, command);
+	ft_print_cmd_el(command);
+}
+
+t_command	**make_command_tab(t_text_read	**text_read)
+{
+	t_cmd_cursor	cmd_cursors;
+	t_command	**command_tab;
+	int			command_count;
+
+	command_count = get_command_count(text_read);
+	command_tab = ft_calloc(command_count + 1, sizeof(t_command *));
+	cmd_cursors.start = 0;
+	cmd_cursors.end = 0;
+	while (command_count > 0)
+	{
+		make_command(&cmd_cursors, text_read);
+		command_count--;
+		cmd_cursors.start = cmd_cursors.end + 1;
+	}
+}
+
+t_command	**parse_line(char *lineread)
 {
 	t_text_read	**text_read;
+	t_command	**command_tab;
 	int				error_status;
 
-	(void)ev;
 	error_status = 0;
 	text_read = NULL;
 	text_read = parse_read_input(lineread);
 	text_read = parse_variables(text_read, &error_status);
 	text_read = parse_extra_quotes(text_read);
 
-	{
-		t_cmd_cursor	cmd_cursors;
-		t_command	**command_tab;
-		int			command_count;
-
-		command_count = get_command_count(text_read);
-		command_tab = ft_calloc(command_count + 1, sizeof(t_command *));
-		cmd_cursors.start = 0;
-		cmd_cursors.end = 0;
-		{
-			t_command	*command;
-
-			command = NULL;
-			command = malloc(sizeof(t_command));
-			cmd_cursors.end = get_last_token_idx(text_read, &cmd_cursors);
-			set_cmd_inputs(text_read, &cmd_cursors, command);
-			set_cmd_outputs(text_read, &cmd_cursors, command);
-			set_cmd_args(text_read, &cmd_cursors, command);
-			ft_print_cmd_el(command);
-		}
-	}
+	make_command_tab(text_read);
 
 	// if (!error_status)
-	// 	ft_print_text_read_tab(text_read);
-	free_text_read(text_read);
-	return (0);
+	//free_text_read(text_read);
+	return (command_tab);
 }
 
 void	test_dash_n(void)
@@ -125,14 +135,14 @@ int	ft_wawa(int ac, char *av[], char *ev[])
 	while (lineread)
 	{
 		if (lineread[0] == 49)
-			exec_line(ev, "< infile | echo xd | cat");
+			parse_line("< infile | echo xd | cat");
 		else if (lineread[0] == 50)
-			exec_line(ev, "< xdfile | echo sltcv2 > mdrfile \
+			parse_line("< xdfile | echo sltcv2 > mdrfile \
 				| echo \"fail2 > failfile | echo ouicv2 > mdrfile2 | cat");
 		else if (lineread[0] == 51)
-			exec_line(ev, "echo \"\"xdxd\"$VARW\"");
+			parse_line("echo \"\"xdxd\"$VARW\"");
 		else
-			exec_line(ev, lineread);
+			parse_line(lineread);
 		printf("\n");
 		add_history(lineread);
 		free(lineread);

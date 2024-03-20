@@ -31,4 +31,6 @@ void	ft_print_text_read_el(t_text_read *text_read);
 void	ft_print_text_read_tab(t_text_read **text_read);
 
 char	**make_chartab(int n, ...);
+
+t_command	**parse_line(char *lineread);
 #endif
