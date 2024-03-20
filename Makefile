@@ -14,8 +14,10 @@ PARSING_SRCS =          \
 	parsing/utils.c        \
 	parsing/parse_quotes.c  \
 	parsing/parse_env_vars.c \
-	parsing/commands_inputs.c \
-	parsing/commands_outputs.c
+	parsing/parse_text_read.c \
+	parsing/commands_inputs.c  \
+	parsing/commands_outputs.c  \
+	parsing/commands_arguments.c \
 
 SRC =       \
 	main.c     \
@@ -62,13 +64,11 @@ minishell_message:
 	fi ; \
 
 $(NAME) $(OUT_NAME): $(OBJ) wawa.h
-	@ar -rcs temp_$(NAME) $(OBJ)
-	@ar -rcT $(NAME) temp_$(NAME) $(LIBFT)/libft.a $(GNL)/get_next_line.a
+	@ar -rc --thin $(NAME) $(OBJ) $(LIBFT)/libft.a $(GNL)/get_next_line.a
 	@${CC} ${CFLAGS} $(CLIB) -g -o $(OUT_NAME) ${NAME}
-	@rm -f temp_$(NAME)
 
 clean:
-	@rm -f ${OBJ} ${BOBJ}
+	@rm -f ${OBJ}
 	@cd $(LIBFT)/ && make -s clean
 	@cd $(GNL)/ && make -s clean
 	@echo "clean done."

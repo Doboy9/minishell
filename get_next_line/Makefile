@@ -21,7 +21,7 @@ $(NAME): $(OBJ) get_next_line.h
 	${AR} $(NAME) $(OBJ)
 
 clean:
-	rm -f ${OBJ} ${BOBJ}
+	rm -f ${OBJ}
 
 fclean: clean
 	rm -f ${NAME}
