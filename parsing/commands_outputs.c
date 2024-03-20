@@ -6,7 +6,7 @@
 /*   By: wneel <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/20 09:18:15 by wneel             #+#    #+#             */
-/*   Updated: 2024/03/20 11:51:35 by wneel            ###   ########.fr       */
+/*   Updated: 2024/03/20 15:11:06 by wneel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,5 +95,5 @@ void	set_cmd_outputs(t_text_read	**text_read, t_cmd_cursor *cursors, t_command *
 	if (text_read[cursors->end] == NULL)
 		command->outputs[outputs]->output_type = STANDARD_OUTPUT;
 	if (text_read[cursors->end] != NULL)
-		command->outputs[outputs]->output_type = PIPE;
+		command->outputs[outputs]->output_type = PIPE_OUTPUT;
 }
