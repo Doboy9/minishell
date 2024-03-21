@@ -6,7 +6,7 @@
 /*   By: wneel <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/20 09:18:15 by wneel             #+#    #+#             */
-/*   Updated: 2024/03/21 15:21:22 by wneel            ###   ########.fr       */
+/*   Updated: 2024/03/21 15:28:15 by wneel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,11 @@ t_output	*init_output(t_command *command, int outputs)
 	return (command->outputs[outputs]);
 }
 
-void	alloc_cmd_outputs(t_text_read	**text_read, t_cmd_cursor *cursors, t_command *command)
+void	alloc_cmd_outputs(
+	t_text_read	**text_read,
+	t_cmd_cursor *cursors,
+	t_command *command
+)
 {
 	int	outputs;
 	int	i;
@@ -43,7 +47,11 @@ void	alloc_cmd_outputs(t_text_read	**text_read, t_cmd_cursor *cursors, t_command
 	command->outputs = ft_calloc(outputs + 1, sizeof(t_output *));
 }
 
-void	alloc_each_cmd_output(t_text_read	**text_read, t_cmd_cursor *cursors, t_command *command)
+void	alloc_each_cmd_output(
+	t_text_read	**text_read,
+	t_cmd_cursor *cursors,
+	t_command *command
+)
 {
 	int	outputs;
 	int	i;
@@ -68,7 +76,10 @@ void	alloc_each_cmd_output(t_text_read	**text_read, t_cmd_cursor *cursors, t_com
 	}
 }
 
-void	set_files_outputs(t_text_read	**text_read, t_cmd_cursor *cursors, t_command *command, int	*outputs)
+void	set_files_outputs(
+	t_text_read	**text_read,
+	t_cmd_cursor *cursors,
+	t_command *command, int	*outputs)
 {
 	int	i;
 
@@ -78,14 +89,16 @@ void	set_files_outputs(t_text_read	**text_read, t_cmd_cursor *cursors, t_command
 		if (text_read[i]->is_metachar == ANGLE_BRACE_RIGHT)
 		{
 			command->outputs[*outputs]->output_type = FILE_OUTPUT;
-			command->outputs[*outputs]->file_path = ft_strdup(text_read[i + 1]->exp_text);
+			command->outputs[*outputs]->file_path
+				= ft_strdup(text_read[i + 1]->exp_text);
 			command->outputs[*outputs]->append = 0;
 			*outputs += 1;
 		}
 		if (text_read[i]->is_metachar == DOUBLE_ANGLE_BRACE_RIGHT)
 		{
 			command->outputs[*outputs]->output_type = FILE_OUTPUT;
-			command->outputs[*outputs]->file_path = ft_strdup(text_read[i + 1]->exp_text);
+			command->outputs[*outputs]->file_path
+				= ft_strdup(text_read[i + 1]->exp_text);
 			command->outputs[*outputs]->append = 1;
 			*outputs += 1;
 		}
@@ -93,7 +106,11 @@ void	set_files_outputs(t_text_read	**text_read, t_cmd_cursor *cursors, t_command
 	}
 }
 
-void	set_cmd_outputs(t_text_read	**text_read, t_cmd_cursor *cursors, t_command *command)
+void	set_cmd_outputs(
+	t_text_read	**text_read,
+	t_cmd_cursor *cursors,
+	t_command *command
+)
 {
 	int	outputs;
 	int	i;

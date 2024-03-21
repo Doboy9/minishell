@@ -6,7 +6,7 @@
 /*   By: wneel <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/20 10:12:59 by wneel             #+#    #+#             */
-/*   Updated: 2024/03/21 15:21:52 by wneel            ###   ########.fr       */
+/*   Updated: 2024/03/21 15:29:44 by wneel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,6 @@ t_text_read	**parse_extra_quotes(t_text_read	**text_read)
 	}
 	return (text_read);
 }
-
 
 void	free_text_read(t_text_read	**text_read)
 {

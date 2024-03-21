@@ -6,13 +6,17 @@
 /*   By: wneel <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/05 15:50:27 by wneel             #+#    #+#             */
-/*   Updated: 2024/03/21 15:20:03 by wneel            ###   ########.fr       */
+/*   Updated: 2024/03/21 15:33:54 by wneel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "wawa.h"
 
-void	set_argc(t_text_read	**text_read, t_cmd_cursor *cursors, t_command *command)
+void	set_argc(
+	t_text_read	**text_read,
+	t_cmd_cursor *cursors,
+	t_command *command
+)
 {
 	int	argc;
 	int	i;
@@ -22,7 +26,7 @@ void	set_argc(t_text_read	**text_read, t_cmd_cursor *cursors, t_command *command
 	while (i < cursors->end)
 	{
 		if (is_redirection(text_read[i]))
-			i	++;
+			i ++;
 		else
 			argc++;
 		i++;
@@ -30,7 +34,11 @@ void	set_argc(t_text_read	**text_read, t_cmd_cursor *cursors, t_command *command
 	command->argc = argc;
 }
 
-void	set_cmd_args(t_text_read	**text_read, t_cmd_cursor *cursors, t_command *command)
+void	set_cmd_args(
+	t_text_read	**text_read,
+	t_cmd_cursor *cursors,
+	t_command *command
+)
 {
 	int	ac;
 	int	i;
@@ -65,16 +73,15 @@ t_command	*make_command(t_cmd_cursor	*cmd_cursors, t_text_read	**text_read)
 	set_cmd_inputs(text_read, cmd_cursors, command);
 	set_cmd_outputs(text_read, cmd_cursors, command);
 	set_cmd_args(text_read, cmd_cursors, command);
-	//ft_print_cmd_el(command);
 	return (command);
 }
 
 t_command	**make_command_tab(t_text_read	**text_read)
 {
 	t_cmd_cursor	cmd_cursors;
-	t_command	**command_tab;
-	int			command_count;
-	int			i;
+	t_command		**command_tab;
+	int				command_count;
+	int				i;
 
 	i = 0;
 	command_count = get_command_count(text_read);
@@ -91,29 +98,32 @@ t_command	**make_command_tab(t_text_read	**text_read)
 	return (command_tab);
 }
 
+void	print_command_tab(t_command	**command_tab)
+{
+	int	i;
+
+	i = 0;
+	while (command_tab[i])
+	{
+		ft_print_cmd_el(command_tab[i]);
+		i++;
+	}
+}
+
 t_command	**parse_line(char *lineread)
 {
 	t_text_read	**text_read;
-	t_command	**command_tab = NULL;
-	int				error_status;
+	t_command	**command_tab;
+	int			error_status;
 
 	error_status = 0;
 	text_read = NULL;
 	text_read = parse_read_input(lineread);
 	text_read = parse_variables(text_read, &error_status);
 	text_read = parse_extra_quotes(text_read);
-
+	command_tab = NULL;
 	command_tab = make_command_tab(text_read);
-
-	{
-		int	i = 0;
-		while (command_tab[i])
-		{
-			ft_print_cmd_el(command_tab[i]);
-			i++;
-		}
-	}
-
+	print_command_tab(command_tab);
 	// if (!error_status)
 	free_text_read(text_read);
 	return (command_tab);

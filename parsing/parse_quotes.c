@@ -6,7 +6,7 @@
 /*   By: wneel <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/20 09:25:52 by wneel             #+#    #+#             */
-/*   Updated: 2024/03/20 10:12:23 by wneel            ###   ########.fr       */
+/*   Updated: 2024/03/21 15:29:26 by wneel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,9 +50,9 @@ int	is_well_quoted(char *str)
 int	len_without_extra_quotes(char *str)
 {
 	t_quote_status	qstatus;
-	int		last_qstatus;
-	int		i;
-	int		j;
+	int				last_qstatus;
+	int				i;
+	int				j;
 
 	i = 0;
 	j = 0;
@@ -72,10 +72,10 @@ int	len_without_extra_quotes(char *str)
 char	*remove_extra_quotes(char *str)
 {
 	t_quote_status	qstatus;
-	char	*without_quotes;
-	int		last_qstatus;
-	int		i;
-	int		j;
+	char			*without_quotes;
+	int				last_qstatus;
+	int				i;
+	int				j;
 
 	i = 0;
 	j = 0;
