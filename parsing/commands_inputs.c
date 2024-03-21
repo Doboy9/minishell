@@ -6,11 +6,20 @@
 /*   By: wneel <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/20 09:17:26 by wneel             #+#    #+#             */
-/*   Updated: 2024/03/20 10:53:54 by wneel            ###   ########.fr       */
+/*   Updated: 2024/03/21 15:20:59 by wneel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../wawa.h"
+
+t_input	*init_input(t_command *command, int inputs)
+{
+	command->inputs[inputs] = malloc(sizeof(t_input));
+	command->inputs[inputs]->file_fd = 0;
+	command->inputs[inputs]->file_path = 0;
+	command->inputs[inputs]->input_type = 0;
+	return (command->inputs[inputs]);
+}
 
 void	alloc_cmd_inputs(t_text_read	**text_read, t_cmd_cursor *cursors, t_command *command)
 {
@@ -42,12 +51,14 @@ void	alloc_each_cmd_input(t_text_read	**text_read, t_cmd_cursor *cursors, t_comm
 	{
 		if (text_read[i]->is_metachar == ANGLE_BRACE_LEFT)
 		{
-			command->inputs[inputs] = malloc(sizeof(t_input));
+			command->inputs[inputs] = NULL;
+			command->inputs[inputs] = init_input(command, inputs);
 			inputs++;
 		}
 		if (text_read[i]->is_metachar == DOUBLE_ANGLE_BRACE_LEFT)
 		{
-			command->inputs[inputs] = malloc(sizeof(t_input));
+			command->inputs[inputs] = NULL;
+			command->inputs[inputs] = init_input(command, inputs);
 			inputs++;
 		}
 		i++;
@@ -68,13 +79,13 @@ void	set_cmd_inputs(t_text_read	**text_read, t_cmd_cursor *cursors, t_command *c
 		if (text_read[i]->is_metachar == ANGLE_BRACE_LEFT)
 		{
 			command->inputs[cmd]->input_type = FILE_INPUT;
-			command->inputs[cmd]->file_path = text_read[i + 1]->exp_text;
+			command->inputs[cmd]->file_path = ft_strdup(text_read[i + 1]->exp_text);
 			cmd++;
 		}
 		if (text_read[i]->is_metachar == DOUBLE_ANGLE_BRACE_LEFT)
 		{
 			command->inputs[cmd]->input_type = HERE_DOC_INPUT;
-			command->inputs[cmd]->file_path = text_read[i + 1]->exp_text;
+			command->inputs[cmd]->file_path = ft_strdup(text_read[i + 1]->exp_text);
 			cmd++;
 		}
 		i++;

@@ -6,6 +6,7 @@ LIBFT = ./libft
 GNL = ./get_next_line
 
 CC = cc
+VG = valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes -s --suppressions=readlinesupp
 
 CFLAGS = -Wall -Wextra -Werror
 CLIB = -lreadline
@@ -81,5 +82,13 @@ fclean: clean
 	@echo "fclean done."
 
 re: fclean all
+
+run:
+	@make
+	@./${OUT_NAME}
+
+vrun:
+	@make
+	@${VG} ./${OUT_NAME}
 
 .PHONY : all make_dependencies minishell_message clean fclean re

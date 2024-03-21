@@ -6,7 +6,7 @@
 /*   By: wneel <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/05 15:50:27 by wneel             #+#    #+#             */
-/*   Updated: 2024/03/20 14:22:53 by wneel            ###   ########.fr       */
+/*   Updated: 2024/03/21 15:20:03 by wneel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,7 +115,7 @@ t_command	**parse_line(char *lineread)
 	}
 
 	// if (!error_status)
-	//free_text_read(text_read);
+	free_text_read(text_read);
 	return (command_tab);
 }
 
@@ -136,30 +136,85 @@ void	test_dash_n(void)
 	}
 }
 
+void	free_output_tab(t_output **output)
+{
+	int	i;
+
+	i = 0;
+	while (output[i])
+	{
+		if (output[i]->file_path != NULL)
+			free(output[i]->file_path);
+		free(output[i]);
+		i++;
+	}
+	free(output);
+}
+
+void	free_input_tab(t_input **input)
+{
+	int	i;
+
+	i = 0;
+	while (input[i])
+	{
+		if (input[i]->file_path != NULL)
+			free(input[i]->file_path);
+		free(input[i]);
+		i++;
+	}
+	free(input);
+}
+
+void	free_cmd_el(t_command	*command)
+{
+	free_tab(command->argv);
+	free(command->command);
+	free_input_tab(command->inputs);
+	free_output_tab(command->outputs);
+	free(command);
+}
+
+void	free_command_tab(t_command	**command_tab)
+{
+	int	i;
+
+	i = 0;
+	while (command_tab[i])
+	{
+		free_cmd_el(command_tab[i]);
+		i++;
+	}
+	free(command_tab);
+}
+
 int	ft_wawa(int ac, char *av[], char *ev[])
 {
 	const char	*prompt;
 	char		*lineread;
+	t_command	**command_tab;
 
 	(void)ac;
 	(void)av;
 	(void)ev;
 	prompt = "easyshell XD >";
 	lineread = readline(prompt);
+	command_tab = NULL;
 	while (lineread)
 	{
 		if (lineread[0] == 49)
-			parse_line("< infile | echo xd | cat");
+			command_tab = parse_line("< infile | echo xd | cat");
 		else if (lineread[0] == 50)
-			parse_line("< xdfile | echo sltcv2 > mdrfile \
+			command_tab = parse_line("< xdfile | echo sltcv2 > mdrfile \
 				| echo \"fail2 > failfile | echo ouicv2 > mdrfile2 | cat");
 		else if (lineread[0] == 51)
-			parse_line("echo \"\"xdxd\"$VARW\"");
+			command_tab = parse_line("echo \"\"xdxd\"$VARW\"");
 		else
-			parse_line(lineread);
+			command_tab = parse_line(lineread);
 		printf("\n");
 		add_history(lineread);
 		free(lineread);
+		free_command_tab(command_tab);
 		lineread = readline(prompt);
 	}
 	return (0);

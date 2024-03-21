@@ -6,7 +6,7 @@
 /*   By: wneel <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/20 10:12:59 by wneel             #+#    #+#             */
-/*   Updated: 2024/03/20 10:13:09 by wneel            ###   ########.fr       */
+/*   Updated: 2024/03/21 15:21:52 by wneel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,14 +29,14 @@ t_text_read	**parse_read_input(char *lineread)
 	while (bash_splitted[i])
 	{
 		splitted = malloc(sizeof(t_text_read));
-		splitted->raw_text = bash_splitted[i];
-		splitted->exp_text = bash_splitted[i];
+		splitted->raw_text = ft_strdup(bash_splitted[i]);
+		splitted->exp_text = ft_strdup(bash_splitted[i]);
 		splitted->is_metachar = parse_word(bash_splitted[i]);
 		splitted->is_attribution = 0x667;
 		text_read[i] = splitted;
 		i++;
 	}
-	free(bash_splitted);
+	free_tab(bash_splitted);
 	return (text_read);
 }
 
@@ -79,6 +79,7 @@ void	free_text_read(t_text_read	**text_read)
 	i = 0;
 	while (text_read[i])
 	{
+		free(text_read[i]->raw_text);
 		free(text_read[i]->exp_text);
 		free(text_read[i]);
 		i++;
