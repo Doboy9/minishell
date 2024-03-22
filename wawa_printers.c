@@ -6,7 +6,7 @@
 /*   By: wneel <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/13 14:53:18 by wneel             #+#    #+#             */
-/*   Updated: 2024/03/21 15:30:47 by wneel            ###   ########.fr       */
+/*   Updated: 2024/03/22 15:01:05 by wneel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,8 +32,8 @@ void	ft_print_input_tab(t_input **input)
 
 void	ft_print_output_el(t_output *output)
 {
-	printf("\n{\n	file_fd: %d;\n	path   : %s;\n	\
-		output  : %d;\n	append  : %d;\n}\n",
+	printf("\n{\n	file_fd: %d;\n	path   : %s;\n"
+		"	output  : %d;\n	append  : %d;\n}\n",
 		output->file_fd, output->file_path,
 		output->output_type, output->append);
 }

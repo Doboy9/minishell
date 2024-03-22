@@ -6,7 +6,7 @@
 /*   By: wneel <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/20 09:18:57 by wneel             #+#    #+#             */
-/*   Updated: 2024/03/20 10:17:11 by wneel            ###   ########.fr       */
+/*   Updated: 2024/03/22 15:05:13 by wneel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@ t_text_read	**parse_read_input(char *lineread);
 t_text_read	**parse_extra_quotes(t_text_read	**text_read);
 t_text_read	**parse_variables(t_text_read	**text_read, int *error_status);
 
+t_command	*make_command(t_cmd_cursor	*cmd_cursors, t_text_read	**text_read);
 void	set_cmd_inputs(t_text_read	**text_read, t_cmd_cursor *cursors, t_command *command);
 void	set_cmd_outputs(t_text_read	**text_read, t_cmd_cursor *cursors, t_command *command);
 #endif
