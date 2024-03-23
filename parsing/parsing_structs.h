@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parsing_structs.h                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wneel <marvin@42.fr>                       +#+  +:+       +#+        */
+/*   By: dboire <dboire@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/05 15:50:31 by wneel             #+#    #+#             */
-/*   Updated: 2024/03/20 09:23:19 by wneel            ###   ########.fr       */
+/*   Updated: 2024/03/23 13:47:07 by dboire           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,7 @@ typedef struct	s_command
 	int		argc;
 	char	**argv;
 	char	*command;
+	char	*command_path;
 	int		flag_n;
 	t_output	**outputs;
 }				t_command;

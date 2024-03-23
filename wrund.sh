@@ -1,1 +1,1 @@
-make -C libft/ && clear && clang -g -Wall -Werror -Wextra -lreadline main.c doboy.c doboy_builtin.c doboy_env.c libft/libft.a && ./a.out "$1" $2 $3 $4 $5 $6 $7 $8 $9
+make -C libft/ && clear && clang -g -Wall -Werror -Wextra -lreadline parsing/parse_quotes.c parsing/parse_env_vars.c parsing/parse_text_read.c parsing/commands_inputs.c parsing/commands_outputs.c parsing/commands_arguments.c doboy.c doboy_builtin.c parsing/utils.c main.c wawa.c wawa_utils.c wawastuff/r.c wawa_printers.c doboy_env.c Pipex/pipex.c ft_envexp.c libft/libft.a && ./a.out "$1" $2 $3 $4 $5 $6 $7 $8 $9

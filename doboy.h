@@ -6,14 +6,14 @@
 /*   By: dboire <dboire@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/14 16:12:03 by dboire            #+#    #+#             */
-/*   Updated: 2024/03/19 17:43:36 by dboire           ###   ########.fr       */
+/*   Updated: 2024/03/21 18:47:20 by dboire           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef DOBOY_H
 # define DOBOY_H
 # include "libft/libft.h"
-# include "Pipex_ms/pipex.h"
+# include "wawa.h"
 # include <readline/history.h>
 # include <readline/readline.h>
 # include <stdio.h>
@@ -56,48 +56,11 @@ typedef struct s_commandexport
 
 typedef struct s_envexp
 {
-	char	**envcopy; // Copy of the env of the pc
-	char	**expcopy; // Copy of the export of the pc
+	char	**envcopy; // Copy the env of the pc
+	int		env_total;
+	char	**expcopy; // Copy the export of the pc
 }	t_envexp;
-//wawa struct
-enum INPUTS {
-	STANDARD_INPUT = 0,
-	FILE_INPUT = 1,
-	PIPE_INPUT = 2,
-	HERE_DOC_INPUT = 3
-};
 
-typedef struct	s_input
-{
-	int		file_fd;
-	char	*file_path;
-	int		input_type;
-}				t_input;
-
-enum OUTPUTS {
-	STANDARD_OUTPUT = 0,
-	FILE_OUTPUT = 1,
-	PIPE_OUTPUT = 2
-};
-
-typedef struct	s_output
-{
-	int		file_fd;
-	char	*file_path;
-	int		output_type;
-	int		append;
-}				t_output;
-
-typedef struct	s_command
-{
-	t_input	**inputs;
-	int		argc;
-	char	**argv;
-	char	*command;
-	int		flag_n;
-	t_output	**outputs;
-}				t_command;
-//wawa struct
 int		ft_doboy(int ac, char *av[], char *ev[]);
 void	ft_builtins(int ac, char *av[], char *ev[]);
 void	ft_changedir(int ac, char *av[]);
@@ -106,5 +69,22 @@ void	ft_copyenv(char *ev[], t_envexp *envexp);
 void	ft_write_exp(t_envexp *envexp);
 void	ft_copyexp(char *ev[], t_envexp *envexp);
 char	*ft_strdup2(const char *s);
+
+
+//envexp
+t_envexp	*ft_envexp(char *ev[], t_envexp *envexp);
+void	ft_expcopy(t_envexp *envexp);
+void	ft_sort_double_tab(t_envexp *envexp, int ascii, int tab);
+int		ft_check_if_already_there(t_envexp *envexp, int i);
+
+
+// pipex
+void	ft_pipex(int ac, t_command **command_tab, t_envexp *envexp);
+void	ft_is_here_doc(t_command **command_tab);
+void	ft_access(t_command **command_tab, t_envexp *envexp);
+char	**ft_split_path(t_envexp *envexp);
+int	find_path(char **env);
+void	ft_check_access(char **split_path, t_command **command_tab, int y);
+
 
 #endif
