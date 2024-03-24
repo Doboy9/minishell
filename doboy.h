@@ -6,17 +6,21 @@
 /*   By: dboire <dboire@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/14 16:12:03 by dboire            #+#    #+#             */
-/*   Updated: 2024/03/21 18:47:20 by dboire           ###   ########.fr       */
+/*   Updated: 2024/03/24 16:32:08 by dboire           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef DOBOY_H
 # define DOBOY_H
 # include "libft/libft.h"
+# include "get_next_line/get_next_line.h"
+# include "sys/types.h"
+# include <fcntl.h>
 # include "wawa.h"
 # include <readline/history.h>
 # include <readline/readline.h>
 # include <stdio.h>
+# include <sys/wait.h>
 
 typedef struct s_commandecho
 {
@@ -86,5 +90,17 @@ char	**ft_split_path(t_envexp *envexp);
 int	find_path(char **env);
 void	ft_check_access(char **split_path, t_command **command_tab, int y);
 
+int		ft_pipe(t_command **command_tab, t_envexp *envexp);
+void	ft_set_infile_fds(int fds[2], t_command **command_tab);
+void	ft_handle_here_doc(char *limiter);
+int		ft_open(char *file_name, int flags, mode_t mode, int silent);
+void	ft_send_error(char *message_part1, char *message_part2);
+void	ft_pipe_loop(t_command **command_tab, t_envexp *envexp);
+void	ft_pipe_it(t_command *command_tab, t_envexp *envexp);
+int		ft_exec_cmd(t_command *command_tab, t_envexp *envexp);
+char	*ft_get_cmd_path(char *cmd, t_envexp *envexp);
+char	**ft_get_paths(char *ev[]);
+char	*ft_parse_pathname(char *path, char *cmd);
+int		ft_handle_outfile(int outfile_fd, t_command *command_tab, t_envexp *envexp);
 
 #endif

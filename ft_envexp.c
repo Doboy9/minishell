@@ -6,7 +6,7 @@
 /*   By: dboire <dboire@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/21 14:44:46 by dboire            #+#    #+#             */
-/*   Updated: 2024/03/21 18:37:05 by dboire           ###   ########.fr       */
+/*   Updated: 2024/03/24 17:10:47 by dboire           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ t_envexp *ft_envexp(char *ev[], t_envexp *envexp)
 	i = 0;
 	while(ev[i])
 		i++;
-	envexp->env_total = i;
+	envexp->env_total = i + 1;
 	envexp->envcopy = ft_calloc(envexp->env_total, sizeof(char **));
 	i = 0;
 	while(ev[i])
