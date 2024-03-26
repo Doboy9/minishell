@@ -6,7 +6,7 @@
 /*   By: dboire <dboire@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/14 16:12:03 by dboire            #+#    #+#             */
-/*   Updated: 2024/03/24 16:32:08 by dboire           ###   ########.fr       */
+/*   Updated: 2024/03/26 19:27:44 by dboire           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,6 +81,11 @@ void	ft_expcopy(t_envexp *envexp);
 void	ft_sort_double_tab(t_envexp *envexp, int ascii, int tab);
 int		ft_check_if_already_there(t_envexp *envexp, int i);
 
+//main prompt
+void	free_command_tab(t_command	**command_tab);
+void	free_cmd_el(t_command	*command);
+void	free_input_tab(t_input **input);
+void	free_output_tab(t_output **output);
 
 // pipex
 void	ft_pipex(int ac, t_command **command_tab, t_envexp *envexp);
@@ -91,7 +96,7 @@ int	find_path(char **env);
 void	ft_check_access(char **split_path, t_command **command_tab, int y);
 
 int		ft_pipe(t_command **command_tab, t_envexp *envexp);
-void	ft_set_infile_fds(int fds[2], t_command **command_tab);
+int	ft_set_infile_fds(int fds[2], t_command **command_tab);
 void	ft_handle_here_doc(char *limiter);
 int		ft_open(char *file_name, int flags, mode_t mode, int silent);
 void	ft_send_error(char *message_part1, char *message_part2);

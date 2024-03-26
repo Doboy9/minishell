@@ -6,7 +6,7 @@
 /*   By: dboire <dboire@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/20 17:28:02 by dboire            #+#    #+#             */
-/*   Updated: 2024/03/24 17:05:46 by dboire           ###   ########.fr       */
+/*   Updated: 2024/03/26 19:29:46 by dboire           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ void	ft_pipex(int ac, t_command **command_tab, t_envexp *envexp)
 {
 	(void)ac;
 
-	ft_is_here_doc(command_tab);
+	// ft_is_here_doc(command_tab);
 	// ft_access(command_tab, envexp);
 	ft_pipe(command_tab, envexp);
 }
@@ -29,23 +29,39 @@ int	ft_pipe(t_command **command_tab, t_envexp *envexp)
 	int		exit_code;
 	int		i;
 	int		y;
-	int save_stdin;
-	int save_stdout;
-	(void)envexp;
+	int		z;
+	int		save_stdin;
+	int		save_stdout;
+	int		outfile_fd;
 
 	i = 0;
 	y = 0;
+	z = 0;
 	save_stdin = dup(1);
 	save_stdout = dup(0);
 	exit_code = 0;
-	ft_set_infile_fds(pipex_fds, command_tab);
+	if (ft_set_infile_fds(pipex_fds, command_tab) == -1)
+		return (-1);
+	while (command_tab[z])
+		z++;
 	// if (pipex_fds[0] != -1)
-	// 	dup2(pipex_fds[0], 0);
+	// 	dup2(pipex_fds[0], 0); cat Makefile > out | cat out > out1
 	while (command_tab[i])
-		i++;
-	if (i > 0)
-		ft_pipe_loop(command_tab, envexp);
-	exit_code = ft_handle_outfile(save_stdout, command_tab[i - 1], envexp);
+	{
+	if (z > 1)
+		ft_pipe_it(command_tab[i], envexp);
+	if(command_tab[i]->outputs[0]->output_type == 0)
+		outfile_fd = save_stdout;
+	if(command_tab[i]->outputs[0]->output_type == 1)
+	{
+		while (command_tab[i]->outputs[y])
+			y++;
+		outfile_fd = ft_open(command_tab[i]->outputs[y - 1]->file_path, O_RDWR | O_TRUNC | O_CREAT, 0644, 1);
+	}
+	exit_code = ft_handle_outfile(outfile_fd, command_tab[i], envexp);
+	dup2(save_stdin, STDIN_FILENO);
+	i++;
+	}
 	return (exit_code);
 }
 int	ft_handle_outfile(int outfile_fd, t_command *command_tab, t_envexp *envexp)
@@ -73,17 +89,6 @@ int	ft_handle_outfile(int outfile_fd, t_command *command_tab, t_envexp *envexp)
 	return (exit_code);
 }
 
-void	ft_pipe_loop(t_command **command_tab, t_envexp *envexp)
-{
-	int	i;
-
-	i = 0;
-	while (command_tab[i])
-	{
-		ft_pipe_it(command_tab[i], envexp);
-		i++;
-	}
-}
 
 void	ft_pipe_it(t_command *command_tab, t_envexp *envexp)
 {
@@ -113,7 +118,11 @@ int	ft_exec_cmd(t_command *command_tab, t_envexp *envexp)
 {
 	int		execve_status;
 	char	*cmd_path;
+	int		i;
+	int		y;
 
+	i = 0;
+	y = 0;
 	cmd_path = NULL;
 	cmd_path = ft_get_cmd_path(command_tab->argv[0], envexp);
 	if (!cmd_path)
@@ -122,7 +131,27 @@ int	ft_exec_cmd(t_command *command_tab, t_envexp *envexp)
 		free(cmd_path);
 		return (127);
 	}
-	// ft_putstr_fd(command_tab->argv[0], 0);
+	if (command_tab->inputs[1])
+	{
+		if (command_tab->inputs[0]->input_type == 1)
+		{
+			while (command_tab->argv[i])
+			{
+				ft_putstr_fd(command_tab->argv[i], 1);
+				ft_putstr_fd("???????", 1);
+				i++;
+			}
+			while (command_tab->inputs[y])
+				y++;
+			command_tab->argv[i] = ft_strdup(command_tab->inputs[y - 1]->file_path); // ERREUR VALGRIND POTENTIEL
+		}
+	}
+	// ft_putstr_fd(cmd_path, 1);
+	// ft_putstr_fd(" cmd_path\n", 1);
+	// ft_putstr_fd(command_tab->argv[0], 1);
+	// ft_putstr_fd(" cmd_tab\n", 1);
+	// ft_putstr_fd(command_tab->inputs[y - 1]->file_path, 1);
+	// ft_putstr_fd(" : file_path\n", 1);
 	execve_status = execve(cmd_path, command_tab->argv, envexp->envcopy);
 	free(cmd_path);
 	if (execve_status == -1)
@@ -150,7 +179,9 @@ char	*ft_get_cmd_path(char *cmd, t_envexp *envexp)
 	{
 		test_pathname = ft_parse_pathname(path[i++], cmd);
 		if (access(test_pathname, X_OK) == 0)
+		{
 			free_tab(path);
+		}
 		if (access(test_pathname, X_OK) == 0)
 			return (test_pathname);
 		free(test_pathname);
@@ -191,45 +222,54 @@ char	*ft_parse_pathname(char *path, char *cmd)
 	return (test_pathname);
 }
 
-void	ft_set_infile_fds(int fds[2], t_command **command_tab)
+int	ft_set_infile_fds(int fds[2], t_command **command_tab)
 {
+	int	i;
+	
+	i = 0;
 	if (!command_tab[0]->inputs[0])
-		return ;
-	else if (command_tab[0]->inputs[0]->input_type == 1)
-		fds[0] = ft_open(command_tab[0]->inputs[0]->file_path, O_RDONLY, 0, 0);
-	// Va etre a gerer avec la struct de here_doc
-	// else if (command_tab[0]->inputs[0]->input_type == 3)
-	// 	ft_handle_here_doc(command_tab[0]->inputs[0]->file_path);
+		return (0);
+	while(command_tab[0]->inputs[i])
+	{
+		if (command_tab[0]->inputs[i]->input_type == 1)
+			fds[0] = ft_open(command_tab[0]->inputs[i]->file_path, O_RDONLY, 0, 0);
+		if (fds[0] == -1)
+			return (-1);
+		i++;
+	}
+	if (command_tab[0]->inputs[i]->input_type == 3)
+		ft_handle_here_doc(command_tab[0]->inputs[i]->file_path);
+	return (0);
 }
 
-// void	ft_handle_here_doc(char *limiter)
-// {
-// 	int		doc_fd[2];
-// 	pid_t	process;
-// 	char	*doc_line;
+void	ft_handle_here_doc(char *limiter)
+{
+	int		doc_fd[2];
+	pid_t	process;
+	char	*doc_line;
 
-// 	pipe(doc_fd);
-// 	process = fork();
-// 	if (process == -1)
-// 		exit(1);
-// 	if (process == 0)
-// 	{
-// 		doc_line = NULL;
-// 		doc_line = get_next_line(0);
-// 		while (doc_line)
-// 		{
-// 			if (ft_strncmp(doc_line, limiter, ft_strlen(limiter)) == 0)
-// 				break ;
-// 			ft_putstr_fd(doc_line, doc_fd[1]);
-// 			free(doc_line);
-// 			doc_line = get_next_line(0);
-// 		}
-// 		free(doc_line);
-// 		exit(0);
-// 	}
-// 	close(doc_fd[1]);
-// 	dup2(doc_fd[0], 0);
-// }
+	pipe(doc_fd);
+	process = fork();
+	if (process == -1)
+		exit(1);
+	if (process == 0)
+	{
+		doc_line = NULL;
+		doc_line = get_next_line(0);
+		while (doc_line)
+		{
+			if (ft_strncmp(doc_line, limiter, ft_strlen(limiter)) == 0)
+				break ;
+			ft_putstr_fd(doc_line, doc_fd[1]);
+			free(doc_line);
+			doc_line = get_next_line(0);
+		}
+		free(doc_line);
+		exit(0);
+	}
+	close(doc_fd[1]);
+	dup2(doc_fd[0], 0);
+}
 
 int	ft_open(char *file_name, int flags, mode_t mode, int silent)
 {
@@ -240,7 +280,11 @@ int	ft_open(char *file_name, int flags, mode_t mode, int silent)
 	else
 		fd = open(file_name, flags, 0);
 	if (fd == -1 && !silent)
-		ft_send_error("no such file or directory: ", file_name);
+	{
+		ft_putstr_fd("bash: ", 1);
+		perror(file_name);
+		return (-1);
+	}
 	return (fd);
 }
 
