@@ -6,7 +6,7 @@
 /*   By: dboire <dboire@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/14 16:12:03 by dboire            #+#    #+#             */
-/*   Updated: 2024/03/26 19:27:44 by dboire           ###   ########.fr       */
+/*   Updated: 2024/03/27 15:07:58 by dboire           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,7 +101,7 @@ void	ft_handle_here_doc(char *limiter);
 int		ft_open(char *file_name, int flags, mode_t mode, int silent);
 void	ft_send_error(char *message_part1, char *message_part2);
 void	ft_pipe_loop(t_command **command_tab, t_envexp *envexp);
-void	ft_pipe_it(t_command *command_tab, t_envexp *envexp);
+void		ft_pipe_it(t_command *command_tab, t_envexp *envexp);
 int		ft_exec_cmd(t_command *command_tab, t_envexp *envexp);
 char	*ft_get_cmd_path(char *cmd, t_envexp *envexp);
 char	**ft_get_paths(char *ev[]);

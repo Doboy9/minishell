@@ -6,7 +6,7 @@
 /*   By: dboire <dboire@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/20 17:28:02 by dboire            #+#    #+#             */
-/*   Updated: 2024/03/26 19:29:46 by dboire           ###   ########.fr       */
+/*   Updated: 2024/03/27 17:14:52 by dboire           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,43 +30,58 @@ int	ft_pipe(t_command **command_tab, t_envexp *envexp)
 	int		i;
 	int		y;
 	int		z;
+	int		infile;
 	int		save_stdin;
 	int		save_stdout;
-	int		outfile_fd;
+	int		outfile_fd = 0;
 
 	i = 0;
 	y = 0;
 	z = 0;
+	infile = 0;
 	save_stdin = dup(1);
 	save_stdout = dup(0);
 	exit_code = 0;
-	if (ft_set_infile_fds(pipex_fds, command_tab) == -1)
+	infile = ft_set_infile_fds(pipex_fds, command_tab);
+	if (infile == -1)
 		return (-1);
+	if (infile != 0)
+		dup2(pipex_fds[0], save_stdin);
+	else 
+		dup2(pipex_fds[0], infile);
 	while (command_tab[z])
 		z++;
-	// if (pipex_fds[0] != -1)
-	// 	dup2(pipex_fds[0], 0); cat Makefile > out | cat out > out1
 	while (command_tab[i])
 	{
-	if (z > 1)
-		ft_pipe_it(command_tab[i], envexp);
-	if(command_tab[i]->outputs[0]->output_type == 0)
-		outfile_fd = save_stdout;
-	if(command_tab[i]->outputs[0]->output_type == 1)
-	{
-		while (command_tab[i]->outputs[y])
-			y++;
-		outfile_fd = ft_open(command_tab[i]->outputs[y - 1]->file_path, O_RDWR | O_TRUNC | O_CREAT, 0644, 1);
-	}
-	exit_code = ft_handle_outfile(outfile_fd, command_tab[i], envexp);
-	dup2(save_stdin, STDIN_FILENO);
-	i++;
+		if (z > 1)
+			ft_pipe_it(command_tab[i], envexp);
+		if(command_tab[i]->outputs)
+		{
+			if(command_tab[i]->outputs[0]->output_type == 1)
+			{
+				while (command_tab[i]->outputs[y])
+				{
+					outfile_fd = ft_open(command_tab[i]->outputs[y]->file_path, O_RDWR | O_TRUNC | O_CREAT, 0644, 1);
+					if(outfile_fd == -1)
+					{
+						ft_putstr_fd("bash: ", 1);
+						perror(command_tab[i]->outputs[y]->file_path);
+						return(-1);
+					}
+					
+					y++;
+				}
+			}
+		}
+		exit_code = ft_handle_outfile(outfile_fd, command_tab[i], envexp);
+		dup2(save_stdin, STDIN_FILENO);
+		i++;
 	}
 	return (exit_code);
 }
 int	ft_handle_outfile(int outfile_fd, t_command *command_tab, t_envexp *envexp)
 {
-	int		exit_code;
+	int		exit_code = 0;
 	pid_t	process;
 	int		status;
 
@@ -131,27 +146,20 @@ int	ft_exec_cmd(t_command *command_tab, t_envexp *envexp)
 		free(cmd_path);
 		return (127);
 	}
-	if (command_tab->inputs[1])
+	if(!command_tab->argv[1])
 	{
-		if (command_tab->inputs[0]->input_type == 1)
+		if (command_tab->inputs[0])
 		{
-			while (command_tab->argv[i])
+			if (command_tab->inputs[0]->input_type == 1)
 			{
-				ft_putstr_fd(command_tab->argv[i], 1);
-				ft_putstr_fd("???????", 1);
-				i++;
+				while (command_tab->argv[i])
+					i++;
+				while (command_tab->inputs[y])
+					y++;
+				command_tab->argv[i] = ft_strdup(command_tab->inputs[y - 1]->file_path); // ERREUR VALGRIND POTENTIEL
 			}
-			while (command_tab->inputs[y])
-				y++;
-			command_tab->argv[i] = ft_strdup(command_tab->inputs[y - 1]->file_path); // ERREUR VALGRIND POTENTIEL
 		}
 	}
-	// ft_putstr_fd(cmd_path, 1);
-	// ft_putstr_fd(" cmd_path\n", 1);
-	// ft_putstr_fd(command_tab->argv[0], 1);
-	// ft_putstr_fd(" cmd_tab\n", 1);
-	// ft_putstr_fd(command_tab->inputs[y - 1]->file_path, 1);
-	// ft_putstr_fd(" : file_path\n", 1);
 	execve_status = execve(cmd_path, command_tab->argv, envexp->envcopy);
 	free(cmd_path);
 	if (execve_status == -1)
@@ -227,18 +235,19 @@ int	ft_set_infile_fds(int fds[2], t_command **command_tab)
 	int	i;
 	
 	i = 0;
-	if (!command_tab[0]->inputs[0])
-		return (0);
-	while(command_tab[0]->inputs[i])
+	if (command_tab[0]->inputs[i])
 	{
-		if (command_tab[0]->inputs[i]->input_type == 1)
-			fds[0] = ft_open(command_tab[0]->inputs[i]->file_path, O_RDONLY, 0, 0);
-		if (fds[0] == -1)
-			return (-1);
-		i++;
+		while(command_tab[0]->inputs[i])
+		{
+			if (command_tab[0]->inputs[i]->input_type == 1)
+				fds[0] = ft_open(command_tab[0]->inputs[i]->file_path, O_RDONLY, 0, 0);
+			if (fds[0] == -1)
+				return (-1);
+			if (command_tab[0]->inputs[i]->input_type == 3)
+				ft_handle_here_doc(command_tab[0]->inputs[i]->file_path);
+			i++;
+		}
 	}
-	if (command_tab[0]->inputs[i]->input_type == 3)
-		ft_handle_here_doc(command_tab[0]->inputs[i]->file_path);
 	return (0);
 }
 
@@ -274,6 +283,7 @@ void	ft_handle_here_doc(char *limiter)
 int	ft_open(char *file_name, int flags, mode_t mode, int silent)
 {
 	int		fd;
+	(void) silent;
 
 	if (mode)
 		fd = open(file_name, flags, mode);
@@ -299,9 +309,6 @@ void	ft_send_error(char *message_part1, char *message_part2)
 	else
 		ft_putendl_fd(message_part1, 2);
 }
-
-
-
 
 // ft _here_doc a suprimer
 void	ft_is_here_doc(t_command **command_tab)
