@@ -6,7 +6,7 @@
 /*   By: dboire <dboire@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/20 17:28:02 by dboire            #+#    #+#             */
-/*   Updated: 2024/03/27 17:14:52 by dboire           ###   ########.fr       */
+/*   Updated: 2024/03/28 19:28:02 by dboire           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,8 +47,8 @@ int	ft_pipe(t_command **command_tab, t_envexp *envexp)
 		return (-1);
 	if (infile != 0)
 		dup2(pipex_fds[0], save_stdin);
-	else 
-		dup2(pipex_fds[0], infile);
+	if (pipex_fds[0] != -1)
+		dup2(pipex_fds[0], save_stdout);
 	while (command_tab[z])
 		z++;
 	while (command_tab[i])
@@ -66,6 +66,7 @@ int	ft_pipe(t_command **command_tab, t_envexp *envexp)
 					{
 						ft_putstr_fd("bash: ", 1);
 						perror(command_tab[i]->outputs[y]->file_path);
+						dup2(save_stdin, STDIN_FILENO);
 						return(-1);
 					}
 					
@@ -73,7 +74,10 @@ int	ft_pipe(t_command **command_tab, t_envexp *envexp)
 				}
 			}
 		}
-		exit_code = ft_handle_outfile(outfile_fd, command_tab[i], envexp);
+		if (outfile_fd == 0)
+			outfile_fd = 1;
+		if (command_tab[i]->command)
+			exit_code = ft_handle_outfile(outfile_fd, command_tab[i], envexp);
 		dup2(save_stdin, STDIN_FILENO);
 		i++;
 	}
@@ -233,29 +237,71 @@ char	*ft_parse_pathname(char *path, char *cmd)
 int	ft_set_infile_fds(int fds[2], t_command **command_tab)
 {
 	int	i;
+	int	y;
+	int	z;
 	
 	i = 0;
+	y = 0;
+	z = 0;
 	if (command_tab[0]->inputs[i])
 	{
-		while(command_tab[0]->inputs[i])
+		while (command_tab[y])
 		{
-			if (command_tab[0]->inputs[i]->input_type == 1)
-				fds[0] = ft_open(command_tab[0]->inputs[i]->file_path, O_RDONLY, 0, 0);
-			if (fds[0] == -1)
-				return (-1);
-			if (command_tab[0]->inputs[i]->input_type == 3)
-				ft_handle_here_doc(command_tab[0]->inputs[i]->file_path);
-			i++;
+			while(command_tab[y]->inputs[i])
+			{
+				if (command_tab[y]->inputs[i]->input_type == 3)
+				{
+					ft_get_here_doc(command_tab[y]->inputs[i], command_tab[y]->inputs[i]->file_path);
+					z = i;
+				}
+				i++;
+			}
+			y++;
+		}
+		y = 0;
+		i = 0;
+		while (command_tab[y])
+		{
+			while(command_tab[y]->inputs[i])
+			{
+				if (command_tab[y]->inputs[i]->input_type == 1)
+					fds[0] = ft_open(command_tab[y]->inputs[i]->file_path, O_RDONLY, 0, 0);
+				if (fds[0] == -1)
+					return (-1);
+				i++;
+			}
+			y++;
 		}
 	}
+	if (z + 1 >= i)
+		ft_handle_here_doc(command_tab[y-1]->inputs[z]->heredoc);
+	else
+		dup2(fds[0], STDIN_FILENO);
 	return (0);
 }
+void	ft_get_here_doc(t_input *input, char *limiter)
+{
+	char *doc_line;
+	
+	doc_line = NULL;
+	input->heredoc = NULL;
+	doc_line = get_next_line(0);
+	while (doc_line)
+	{
+		if (ft_strncmp(doc_line, limiter, ft_strlen(doc_line) - 1) == 0)
+			break ;
+		input->heredoc = ft_strjoin(input->heredoc, doc_line);
+		free(doc_line);
+		doc_line = get_next_line(0);
+	}
+	free (doc_line);
+	return ;
+}
 
-void	ft_handle_here_doc(char *limiter)
+void	ft_handle_here_doc(char *heredoc)
 {
 	int		doc_fd[2];
 	pid_t	process;
-	char	*doc_line;
 
 	pipe(doc_fd);
 	process = fork();
@@ -263,21 +309,11 @@ void	ft_handle_here_doc(char *limiter)
 		exit(1);
 	if (process == 0)
 	{
-		doc_line = NULL;
-		doc_line = get_next_line(0);
-		while (doc_line)
-		{
-			if (ft_strncmp(doc_line, limiter, ft_strlen(limiter)) == 0)
-				break ;
-			ft_putstr_fd(doc_line, doc_fd[1]);
-			free(doc_line);
-			doc_line = get_next_line(0);
-		}
-		free(doc_line);
+		ft_putstr_fd(heredoc, doc_fd[1]);
 		exit(0);
 	}
 	close(doc_fd[1]);
-	dup2(doc_fd[0], 0);
+	dup2(doc_fd[0], STDIN_FILENO);
 }
 
 int	ft_open(char *file_name, int flags, mode_t mode, int silent)

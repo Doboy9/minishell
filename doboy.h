@@ -6,7 +6,7 @@
 /*   By: dboire <dboire@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/14 16:12:03 by dboire            #+#    #+#             */
-/*   Updated: 2024/03/27 15:07:58 by dboire           ###   ########.fr       */
+/*   Updated: 2024/03/28 19:13:44 by dboire           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,12 +92,15 @@ void	ft_pipex(int ac, t_command **command_tab, t_envexp *envexp);
 void	ft_is_here_doc(t_command **command_tab);
 void	ft_access(t_command **command_tab, t_envexp *envexp);
 char	**ft_split_path(t_envexp *envexp);
-int	find_path(char **env);
+int		find_path(char **env);
 void	ft_check_access(char **split_path, t_command **command_tab, int y);
 
+
+void	ft_get_here_doc(t_input *input, char *limiter);
+
 int		ft_pipe(t_command **command_tab, t_envexp *envexp);
-int	ft_set_infile_fds(int fds[2], t_command **command_tab);
-void	ft_handle_here_doc(char *limiter);
+int		ft_set_infile_fds(int fds[2], t_command **command_tab);
+void	ft_handle_here_doc(char *heredoc);
 int		ft_open(char *file_name, int flags, mode_t mode, int silent);
 void	ft_send_error(char *message_part1, char *message_part2);
 void	ft_pipe_loop(t_command **command_tab, t_envexp *envexp);

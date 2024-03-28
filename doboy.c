@@ -6,7 +6,7 @@
 /*   By: dboire <dboire@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 14:18:54 by dboire            #+#    #+#             */
-/*   Updated: 2024/03/27 15:22:05 by dboire           ###   ########.fr       */
+/*   Updated: 2024/03/28 16:14:54 by dboire           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ int	ft_doboy(int ac, char *av[], char *ev[])
 				i++;
 			}
 		}
-		printf("\n"); // Ne pas mettre le printf quand il y a un here_doc et chmod 000 ou fichier manquant
+		printf("\n"); // Ne pas mettre le printf quand il y a un here_doc et erreur
 		add_history(lineread);
 		free(lineread);
 		free_command_tab(command_tab);
